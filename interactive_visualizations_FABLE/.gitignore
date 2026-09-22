@@ -11,3 +11,6 @@ data/raw/cb_2023_us_county_500k.zip
 data/raw/saipe/
 data/raw/census_popest/
 data/raw/nces/
+
+# submission zips are built from dashboard/, not source
+submission/
