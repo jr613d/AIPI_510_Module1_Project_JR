@@ -1,0 +1,249 @@
+<!-- ===================== TAB 0: elementary schools ===================== -->
+<section id="tab0" class="page" hidden>
+  <header class="top">
+    <div>
+      <h1>What is happening in elementary schools?</h1>
+      <p class="sub">The same enrollment picture as tab 1, restricted to students in elementary schools: the sum of ADM at every district school DPI classifies as elementary (span E, typically K-5 or PK-5, with pre-K excluded from ADM). A second measure adds K-8 schools (span I) for districts that run them. Districts and counties, 2005-06 through 2024-25.</p>
+    </div>
+  </header>
+  <div class="kpis" data-role="kpis"></div>
+  <div class="controls" data-role="controls"></div>
+  <div class="grid maps">
+    <div class="card">
+      <div class="card-head"><div><h2 data-role="mapTitle">Statewide</h2><p class="hint">Hover for detail. Click a unit to add it to the comparison chart and pin it in the heatmap. Bold outline marks the Triangle focus area.</p></div></div>
+      <svg data-role="mapMain" class="map-svg" viewBox="0 0 800 400" role="img"></svg>
+      <div class="legend" data-role="legend"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2>Triangle detail</h2><p class="hint" data-role="insetHint">Same colors as the state map.</p></div></div>
+      <svg data-role="mapInset" class="map-svg" viewBox="0 0 400 400" role="img"></svg>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-head"><div><h2 data-role="stripTitle">Where does each unit sit this year?</h2><p class="hint">Every unit as one dot on the scale for the selected year. Selected units are colored; the tick is the statewide median.</p></div></div>
+    <svg data-role="strip" viewBox="0 0 1200 110" role="img"></svg>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head">
+        <div><h2 data-role="lineTitle">Elementary enrollment over time</h2><p class="hint">Selected units, with the statewide total as the gray reference. Numbered markers are policy and pandemic events (key on tab 1).</p></div>
+        <div class="tools"><div class="seg" data-role="lineMode" role="group" aria-label="Line chart scale"><button type="button" data-v="index" aria-pressed="true">Indexed to base = 100</button><button type="button" data-v="raw" aria-pressed="false">Students (ADM)</button></div></div>
+      </div>
+      <div class="chips" data-role="chips"></div>
+      <svg data-role="lineChart" viewBox="0 0 760 340" role="img"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 data-role="cardsTitle">Triangle focus</h2><p class="hint">Selected measure each year. Dot marks the peak year. Click a card to add or remove it from the comparison.</p></div></div>
+      <div class="cards5" data-role="cards"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-head">
+      <div><h2 data-role="heatTitle">Every unit, every year</h2><p class="hint">One row per unit, one column per school year, colored by the selected measure and view. Triangle units pinned at the top. Click a row to select it.</p></div>
+      <div class="tools"><label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Sort rows</label>
+        <select data-role="sort"><option value="latest">Latest value</option><option value="cum">Cumulative change since base</option><option value="size">Size (largest first)</option><option value="name">Name</option></select></div>
+    </div>
+    <div class="heat-wrap"><svg data-role="heat" class="heat" role="img"></svg></div>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head"><div><h2>Statewide: elementary students by sector and school type</h2><p class="hint">ADM in district elementary schools (E), district K-8 schools (I), and charter schools classified E or I.</p></div></div>
+      <svg data-role="ctx1" viewBox="0 0 760 300" role="img"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 data-role="gsTitle">How many units grew or shrank each year</h2><p class="hint">Count of units whose elementary ADM rose (above the line) or fell (below) in each school year.</p></div></div>
+      <svg data-role="ctx2" viewBox="0 0 520 300" role="img"></svg>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px"><details class="tbl" data-role="tableDetails"><summary>Table view of the current map (level, measure, view, year)</summary><div data-role="tableHost"></div></details></div>
+  <div class="card" style="margin-top:14px">
+    <h2>How to read this, and where it comes from</h2>
+    <div class="notes">
+      <div class="blk"><h3>What "elementary" means here</h3>
+        <p>DPI's ADM table reports one number per school and one per district; it does not report ADM by grade. DPI's location table classifies each school by grade span: <b>E</b> elementary, <b>I</b> elementary plus middle (K-8), <b>M</b> middle, <b>H</b> high, <b>A</b> all grades, <b>T</b> middle plus high. The default measure sums ADM at a district's <b>E</b> schools for each year, using that year's classification. The second measure adds <b>I</b> schools, which include grades 6 to 8. Elementary-grade students inside K-12 (A) schools, and in early colleges or special schools, are not captured by either.</p>
+        <p>The district-level E, M and H rows that exist in DPI's ADM table are the <em>average school size</em> in each category, not totals (CHCCS 2024-25: E = 411, which is 4,522 students in 11 schools). They are not used.</p>
+      </div>
+      <div class="blk"><h3>Pre-K</h3>
+        <p>Pre-kindergarten is not in ADM, for any district or year. DPI's definition counts K-12 membership only, and the data agrees: DPI's separate pre-K enrollment table lists schools whose pre-K count exceeds their entire ADM (Sadie Saulter in Pitt County: ADM 32, pre-K 232), which could not happen if pre-K were inside ADM. So an elementary school labeled PK-5 contributes its K-5 students here.</p>
+      </div>
+      <div class="blk"><h3>Coverage</h3>
+        <p>Alleghany and Watauga run only K-8 schools and have no E schools in any year; Hyde, Jackson and Yadkin lack E schools in a few years. Those units show hatched (no value) under the E-only measure and are covered by the E + K-8 measure. County figures sum the districts in the county plus, when selected, charter schools classified E or I and located there. Statewide in 2024-25, district E schools hold about 581,000 students and district K-8 schools about 41,000; charters add about 5,000 in E schools and 46,000 in K-8 schools, since many charters are K-8.</p>
+        <p>DPI notes that its 2024-25 final ADM may be higher than expected because of a transition to a new student information system; treat 2024-25 one-year changes with that in mind. Other caveats from tab 1 (boundary changes, federal and tribal districts, the pandemic year) apply here too, and the full list is in <code>LIMITATIONS.md</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TAB 2: private schools, home schools, vouchers ===================== -->
+<section id="tab2" class="page" hidden>
+  <header class="top">
+    <div>
+      <h1>Who is leaving public school, and where?</h1>
+      <p class="sub">Private school and home school students in every North Carolina county, 2005-06 through 2025-26, plus Opportunity Scholarship (voucher) recipients. County level only: the state reports non-public enrollment by county, so Chapel Hill-Carrboro and Orange County Schools share Orange County's numbers here.</p>
+    </div>
+  </header>
+  <div class="kpis" data-role="kpis"></div>
+  <div class="controls" data-role="controls"></div>
+  <div class="grid maps">
+    <div class="card">
+      <div class="card-head"><div><h2 data-role="mapTitle">Statewide</h2><p class="hint">Hover for detail. Click a county to add it to the comparison chart and pin it in the heatmap. Bold outline marks the Triangle focus area.</p></div></div>
+      <svg data-role="mapMain" class="map-svg" viewBox="0 0 800 400" role="img"></svg>
+      <div class="legend" data-role="legend"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2>Triangle detail</h2><p class="hint">Orange, Durham, Wake and Chatham counties, same colors as the state map.</p></div></div>
+      <svg data-role="mapInset" class="map-svg" viewBox="0 0 400 400" role="img"></svg>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-head"><div><h2 data-role="stripTitle">Where does each county sit this year?</h2><p class="hint">Every county as one dot on the scale for the selected year. Selected counties are colored; the tick is the statewide median.</p></div></div>
+    <svg data-role="strip" viewBox="0 0 1200 110" role="img"></svg>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head">
+        <div><h2 data-role="lineTitle">Over time</h2><p class="hint">Selected counties. Numbered markers are policy and pandemic events (key on tab 1).</p></div>
+        <div class="tools"><div class="seg" data-role="lineMode" role="group" aria-label="Line chart scale"><button type="button" data-v="index" aria-pressed="true">Indexed to base = 100</button><button type="button" data-v="raw" aria-pressed="false">Raw values</button></div></div>
+      </div>
+      <div class="chips" data-role="chips"></div>
+      <svg data-role="lineChart" viewBox="0 0 760 340" role="img"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 data-role="cardsTitle">Triangle focus</h2><p class="hint">Selected measure each year. Dot marks the peak year. Click a card to add or remove it from the comparison.</p></div></div>
+      <div class="cards5" data-role="cards"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-head">
+      <div><h2 data-role="heatTitle">Every county, every year</h2><p class="hint">One row per county, one column per school year, colored by the selected measure and view. Triangle counties pinned at the top. Click a row to select it.</p></div>
+      <div class="tools"><label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Sort rows</label>
+        <select data-role="sort"><option value="latest">Latest value</option><option value="cum">Cumulative change since base</option><option value="size">Size (largest first)</option><option value="name">Name</option></select></div>
+    </div>
+    <div class="heat-wrap"><svg data-role="heat" class="heat" role="img"></svg></div>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head"><div><h2>Statewide: every K-12 sector</h2><p class="hint">Traditional district ADM, charter ADM, private school enrollment and estimated home school enrollment. Non-public sectors run one year further (2025-26) than public ADM.</p></div></div>
+      <svg data-role="ctx1" viewBox="0 0 760 320" role="img"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2>Share of all NC students outside district schools</h2><p class="hint">Charter, private and home school students as a percent of all K-12 students counted in any sector.</p></div></div>
+      <svg data-role="ctx2" viewBox="0 0 520 320" role="img"></svg>
+    </div>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head"><div><h2>Opportunity Scholarships statewide</h2><p class="hint">Students funded each year, from NCSEAA's annual reports to the legislature. Only the years with a published report are shown.</p></div></div>
+      <svg data-role="ctx3" viewBox="0 0 760 300" role="img"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2>New voucher students who left a Triangle district</h2><p class="hint">Prior public school of NEW recipients, as reported by parents to NCSEAA. Published for 2020-21 and 2022-23 only; the requirement to have attended public school ended with universal eligibility.</p></div></div>
+      <div data-role="ctx4"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px"><details class="tbl" data-role="tableDetails"><summary>Table view of the current map (measure, view, year)</summary><div data-role="tableHost"></div></details></div>
+  <div class="card" style="margin-top:14px">
+    <h2>How to read this, and where it comes from</h2>
+    <div class="notes">
+      <div class="blk"><h3>Measures</h3>
+        <p><b>Private school students</b> and <b>private schools</b>: self-reported to NC DNPE by conventional private schools, a point-in-time count each school year. School counts by county begin in 2007-08.</p>
+        <p><b>Home school students (est.)</b> and <b>home schools</b>: DNPE counts registered home schools directly and estimates students from a sample of reporting schools. A home school is a household, not a student.</p>
+        <p><b>Non-public students</b>: private plus home school. <b>Non-public share</b> divides that by all students counted in any sector (district ADM + charter ADM + private + home). <b>Per 100 school-age children</b> divides by the county's Census population aged 5 to 17.</p>
+        <p><b>Opportunity Scholarship recipients</b>: students funded in 2024-25 by county of residence, new and returning, as of Feb. 3, 2025. Only one year of county data has been published, so this measure has no time series.</p>
+      </div>
+      <div class="blk"><h3>Views</h3>
+        <p><b>Level</b> is the raw measure. <b>1-year</b>, <b>3-year average</b>, <b>cumulative since base</b> and <b>below peak</b> are the same change metrics as tab 1. Share-type measures offer level and change-in-points since base.</p>
+      </div>
+      <div class="blk"><h3>Data</h3>
+        <p>NC Department of Administration, Division of Non-Public Education: annual private school and home school statistical summaries, 2005-06 through 2025-26 (PDF and Word reports, parsed by county). The 2015-16 home school report is not on DNPE's site; that year is interpolated from its neighbors. Public ADM is NC DPI (tab 1). Population is the U.S. Census Bureau (tab 3). Vouchers: NCSEAA annual reports to the Joint Legislative Education Oversight Committee (2020-21, 2022-23, 2023-24, 2024-25) and the legislative staff table of 2024-25 recipients by county and income tier.</p>
+      </div>
+      <div class="blk"><h3>Limits</h3>
+        <p>Private and home school numbers are self-reported and DNPE describes them as best-available estimates; reporting compliance rose after 2023 when it became a condition of receiving voucher funds, so part of the 2023-25 private school jump may be better reporting. Home school enrollment is a sample-based estimate, so single-year moves (the 2020-21 spike to 179,900 and the fall after it) are partly estimation noise. Students are counted where the school (or household) is located, not where the child would otherwise attend public school; Wake, Mecklenburg and Durham private schools draw from neighboring counties.</p>
+        <p><b>Source corrections.</b> Two printed values were replaced by the average of their neighboring years because the reports' own totals and neighbors show them to be typos: Alexander County home schools in 2013-14 (printed as 3; 304 and 337 the years around it) and Alamance County home school students in 2022-23 (printed as 3,610, the same as Iredell's entry on the same line; the report's grand total is 1,828 below the sum of its rows). The 2005-06 private school report's grand total (92,867) is 200 above the sum of its own county rows; the county rows are used as printed.</p>
+        <p><b>Vouchers.</b> The 2024-25 county table is dated Feb. 3, 2025 and sums to 79,775; the annual report's June 30 total is 80,472. Graham County's row could not be read from the table. NCSEAA's 2021-22 annual report was not located, so that year is missing from the statewide bars. 2025-26 non-public figures come from the current-year reports, which DNPE may revise.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TAB 3: population vs. enrollment ===================== -->
+<section id="tab3" class="page" hidden>
+  <header class="top">
+    <div>
+      <h1>Are there fewer kids, or fewer kids in public school?</h1>
+      <p class="sub">School-age population (ages 5 to 17) next to public school enrollment for every district and county, 2005-06 through 2024-25. Where the child population grows while enrollment falls, families are choosing something else. Where both fall, it is demographics.</p>
+    </div>
+  </header>
+  <div class="kpis" data-role="kpis"></div>
+  <div class="controls" data-role="controls"></div>
+  <div class="grid maps">
+    <div class="card">
+      <div class="card-head"><div><h2 data-role="mapTitle">Statewide</h2><p class="hint">Hover for detail. Click a unit to add it to the comparison chart and pin it in the heatmap. Bold outline marks the Triangle focus area.</p></div></div>
+      <svg data-role="mapMain" class="map-svg" viewBox="0 0 800 400" role="img"></svg>
+      <div class="legend" data-role="legend"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2>Triangle detail</h2><p class="hint" data-role="insetHint">Same colors as the state map.</p></div></div>
+      <svg data-role="mapInset" class="map-svg" viewBox="0 0 400 400" role="img"></svg>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-head"><div><h2 data-role="stripTitle">Where does each unit sit this year?</h2><p class="hint">Every unit as one dot on the scale for the selected year. Selected units are colored; the tick is the statewide median.</p></div></div>
+    <svg data-role="strip" viewBox="0 0 1200 110" role="img"></svg>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head">
+        <div><h2>Population and enrollment, side by side</h2><p class="hint">For each selected unit: school-age population (solid) and public enrollment (dashed), both indexed to the base year. A widening gap is share moving out of public schools.</p></div>
+      </div>
+      <div class="chips" data-role="chips"></div>
+      <svg data-role="lineChart" viewBox="0 0 760 340" role="img"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 data-role="cardsTitle">Triangle focus</h2><p class="hint">School-age population (solid) versus public enrollment (dashed), indexed to the base year. Click a card to add or remove it from the comparison.</p></div></div>
+      <div class="cards5" data-role="cards"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-head"><div><h2>Growth in kids versus growth in enrollment</h2><p class="hint" data-role="scatterHint">Each dot is one unit. Horizontal: change in school-age population since the base year. Vertical: change in public enrollment. Below the diagonal, enrollment lagged the child population.</p></div></div>
+    <svg data-role="scatter" viewBox="0 0 1200 460" role="img"></svg>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-head">
+      <div><h2 data-role="heatTitle">Every unit, every year</h2><p class="hint">One row per unit, one column per school year, colored by the selected measure and view. Triangle units pinned at the top. Click a row to select it.</p></div>
+      <div class="tools"><label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Sort rows</label>
+        <select data-role="sort"><option value="latest">Latest value</option><option value="cum">Cumulative change since base</option><option value="size">Size (largest first)</option><option value="name">Name</option></select></div>
+    </div>
+    <div class="heat-wrap"><svg data-role="heat" class="heat" role="img"></svg></div>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head"><div><h2>Statewide: kids, public enrollment and non-public enrollment</h2><p class="hint">Indexed to the base year = 100. NC school-age population, district plus charter ADM, and private plus home school enrollment.</p></div></div>
+      <svg data-role="ctx1" viewBox="0 0 760 320" role="img"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 data-role="ctx2Title">How units sort into the four quadrants each year</h2><p class="hint">Relative to the base year: kids up and enrollment up, kids up but enrollment down, both down, or kids down but enrollment up.</p></div></div>
+      <svg data-role="ctx2" viewBox="0 0 520 320" role="img"></svg>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px"><details class="tbl" data-role="tableDetails"><summary>Table view of the current map (level, measure, view, year)</summary><div data-role="tableHost"></div></details></div>
+  <div class="card" style="margin-top:14px">
+    <h2>How to read this, and where it comes from</h2>
+    <div class="notes">
+      <div class="blk"><h3>Measures</h3>
+        <p><b>School-age population (5-17)</b>: Census Bureau estimates of residents aged 5 to 17 as of July 1, matched to the school year that ends that June (the July 2024 estimate pairs with 2023-24), the same pairing the CHCCS notebook uses. The latest estimate is July 2024, so 2024-25 has no population value and shows as "no value"; the page opens on 2023-24. <b>Total population</b>: all residents. <b>Public enrollment</b>: district plus charter ADM for counties, district ADM for districts (tab 1).</p>
+        <p><b>Public students per 100 school-age children</b>: enrollment divided by the 5-17 population. Above 100 is possible when a district draws students from outside its boundary or when the population estimate runs low. For districts the numerator excludes charter students, so a falling value can mean charter growth as much as private or home schooling.</p>
+        <p><b>Enrollment minus population gap</b>: cumulative percent change in enrollment since the base year minus cumulative percent change in the 5-17 population. Negative means enrollment fell faster (or grew slower) than the child population.</p>
+        <p><b>Quadrant</b>: the sign of each change since the base year, in four classes. "Kids up, enrollment down" is the one that points to families choosing other options.</p>
+      </div>
+      <div class="blk"><h3>Data</h3>
+        <p>Counties: U.S. Census Bureau Population Estimates Program, county characteristics by age and sex, three vintages stitched together (2000-2010 intercensal, Vintage 2019, Vintage 2024). The intercensal file only has 5-year age groups, so 2005-2009 values for ages 5-17 are scaled from ages 5-19 using each county's own July 2010 ratio. Districts: U.S. Census Bureau Small Area Income and Poverty Estimates (SAIPE), school district estimates of total population and population aged 5-17, 2005 through 2024, matched to DPI districts through the Census district boundaries used on the maps.</p>
+      </div>
+      <div class="blk"><h3>Limits</h3>
+        <p><b>Estimate seams.</b> SAIPE district estimates before 2010 were built on 2000 Census geography and undercount fast-growing districts; Chapel Hill-Carrboro's 5-17 population steps up from about 9,600 to about 12,400 between 2008-09 and 2010-11 for that reason, not because 3,000 children arrived. Use a base year of 2010-11 or later for district comparisons. County estimates change vintage at 2010 and again at 2020, and the 2020 seam moves some small counties by 10% or more in one year (Duplin, Hyde, Gates). Treat 2018-19 to 2019-20 population changes with care.</p>
+        <p><b>Boundary change.</b> Nash-Rocky Mount Schools split along the county line for 2024-25 (see tab 1). SAIPE's 2024 estimate adopted the new boundary, which under this pairing lands on 2023-24, one year before the student transfer shows in ADM; the Nash and Edgecombe gap values for 2023-24 are therefore not meaningful. The map still draws the 2023 Census shape.</p>
+        <p><b>Who is counted where.</b> ADM counts students where they attend; population counts children where they live. Federal and tribal schools (Fort Bragg, Camp Lejeune, Cherokee Central) are not NC districts, so county capture rates in Cumberland, Onslow, Swain and Jackson run low and Swain County Schools' district-level rate runs above 100 (its resident count excludes the tribal district's area). Small city districts such as Elkin and Mount Airy enroll out-of-district transfers and can also exceed 100. Ages 5 to 17 is not exactly K-12: some 5-year-olds are not yet in kindergarten and some 18-year-olds are still enrolled. A full list of caveats is in <code>LIMITATIONS.md</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>

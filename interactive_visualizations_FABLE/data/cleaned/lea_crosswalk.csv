@@ -1,0 +1,116 @@
+agency_code,display_name,dpi_name,county,geoid,county_geoid
+010LEA,Alamance-Burlington Schools,Alamance-Burlington Schools,Alamance,3700030,37001
+020LEA,Alexander County Schools,Alexander County Schools,Alexander,3700090,37003
+030LEA,Alleghany County Schools,Alleghany County Schools,Alleghany,3700120,37005
+040LEA,Anson County Schools,Anson County Schools,Anson,3700180,37007
+050LEA,Ashe County Schools,Ashe County Schools,Ashe,3700210,37009
+060LEA,Avery County Schools,Avery County Schools,Avery,3700300,37011
+070LEA,Beaufort County Schools,Beaufort County Schools,Beaufort,3700330,37013
+080LEA,Bertie County Schools,Bertie County Schools,Bertie,3700360,37015
+090LEA,Bladen County Schools,Bladen County Schools,Bladen,3700390,37017
+100LEA,Brunswick County Schools,Brunswick County Schools,Brunswick,3700420,37019
+110LEA,Buncombe County Schools,Buncombe County Schools,Buncombe,3700450,37021
+111LEA,Asheville City Schools,Asheville City Schools,Buncombe,3700270,37021
+120LEA,Burke County Schools,Burke County Schools,Burke,3700480,37023
+130LEA,Cabarrus County Schools,Cabarrus County Schools,Cabarrus,3700530,37025
+132LEA,Kannapolis City Schools,Kannapolis City Schools,Cabarrus,3702430,37025
+140LEA,Caldwell County Schools,Caldwell County Schools,Caldwell,3700580,37027
+150LEA,Camden County Schools,Camden County Schools,Camden,3700600,37029
+160LEA,Carteret County Public Schools,Carteret County Public Schools,Carteret,3700630,37031
+170LEA,Caswell County Schools,Caswell County Schools,Caswell,3700660,37033
+180LEA,Catawba County Schools,Catawba County Schools,Catawba,3700690,37035
+181LEA,Hickory City Schools,Hickory City Schools,Catawba,3702190,37035
+182LEA,Newton-Conover City Schools,Newton Conover City Schools,Catawba,3703360,37035
+190LEA,Chatham County Schools,Chatham County Schools,Chatham,3700750,37037
+200LEA,Cherokee County Schools,Cherokee County Schools,Cherokee,3700780,37039
+210LEA,Edenton-Chowan Schools,Edenton-Chowan Schools,Chowan,3700840,37041
+220LEA,Clay County Schools,Clay County Schools,Clay,3700870,37043
+230LEA,Cleveland County Schools,Cleveland County Schools,Cleveland,3700900,37045
+240LEA,Columbus County Schools,Columbus County Schools,Columbus,3700960,37047
+241LEA,Whiteville City Schools,Whiteville City Schools,Columbus,3704920,37047
+250LEA,Craven County Board of Education,Craven County Board of Education,Craven,3703310,37049
+260LEA,Cumberland County Schools,Cumberland County Schools,Cumberland,3700011,37051
+270LEA,Currituck County Schools,Currituck County Schools,Currituck,3701080,37053
+280LEA,Dare County Schools,Dare County Schools,Dare,3701110,37055
+290LEA,Davidson County Schools,Davidson County Schools,Davidson,3701140,37057
+291LEA,Lexington City Schools,Lexington City Schools,Davidson,3702640,37057
+292LEA,Thomasville City Schools,Thomasville City Schools,Davidson,3704500,37057
+300LEA,Davie County Schools,Davie County Schools,Davie,3701170,37059
+310LEA,Duplin County Schools,Duplin County Schools,Duplin,3701200,37061
+320LEA,Durham Public Schools,Durham Public Schools,Durham,3701260,37063
+330LEA,Edgecombe County Public Schools,Edgecombe County Public Schools,Edgecombe,3701320,37065
+340LEA,Winston-Salem/Forsyth County Schools,Winston Salem / Forsyth County Schools,Forsyth,3701500,37067
+350LEA,Franklin County Schools,Franklin County Schools,Franklin,3701530,37069
+360LEA,Gaston County Schools,Gaston County Schools,Gaston,3701620,37071
+370LEA,Gates County Schools,Gates County Schools,Gates,3701680,37073
+380LEA,Graham County Schools,Graham County Schools,Graham,3701770,37075
+390LEA,Granville County Schools,Granville County Schools,Granville,3701800,37077
+400LEA,Greene County Schools,Greene County Schools,Greene,3701830,37079
+410LEA,Guilford County Schools,Guilford County Schools,Guilford,3701920,37081
+420LEA,Halifax County Schools,Halifax County Schools,Halifax,3701950,37083
+421LEA,Roanoke Rapids City Schools,Roanoke Rapids City Schools,Halifax,3703900,37083
+422LEA,Weldon City Schools,Weldon City Schools,Halifax,3704890,37083
+430LEA,Harnett County Schools,Harnett County Schools,Harnett,3702010,37085
+440LEA,Haywood County Schools,Haywood County Schools,Haywood,3702040,37087
+450LEA,Henderson County Schools,Henderson County Schools,Henderson,3702100,37089
+460LEA,Hertford County Schools,Hertford County Schools,Hertford,3702160,37091
+470LEA,Hoke County Schools,Hoke County Schools,Hoke,3702250,37093
+480LEA,Hyde County Schools,Hyde County Schools,Hyde,3702280,37095
+490LEA,Iredell-Statesville Schools,Iredell-Statesville Schools,Iredell,3702310,37097
+491LEA,Mooresville Graded School District,Mooresville Graded School District,Iredell,3703120,37097
+500LEA,Jackson County Public Schools,Jackson County Public Schools,Jackson,3702340,37099
+510LEA,Johnston County Public Schools,Johnston County Public Schools,Johnston,3702370,37101
+520LEA,Jones County Schools,Jones County Schools,Jones,3702400,37103
+530LEA,Lee County Schools,Lee County Schools,Lee,3702560,37105
+540LEA,Lenoir County Public Schools,Lenoir County Public Schools,Lenoir,3702610,37107
+550LEA,Lincoln County Schools,Lincoln County Schools,Lincoln,3702680,37109
+560LEA,Macon County Schools,Macon County Schools,Macon,3702760,37113
+570LEA,Madison County Schools,Madison County Schools,Madison,3702820,37115
+580LEA,Martin County Schools,Martin County Schools,Martin,3702880,37117
+590LEA,McDowell County Schools,McDowell County Schools,McDowell,3702940,37111
+600LEA,Charlotte-Mecklenburg Schools,Charlotte-Mecklenburg Schools,Mecklenburg,3702970,37119
+610LEA,Mitchell County Schools,Mitchell County Schools,Mitchell,3703000,37121
+620LEA,Montgomery County Schools,Montgomery County Schools,Montgomery,3703060,37123
+630LEA,Moore County Schools,Moore County Schools,Moore,3703090,37125
+640LEA,Nash County Public Schools,Nash County Public Schools,Nash,3703270,37127
+650LEA,New Hanover County Schools,New Hanover County Schools,New Hanover,3703330,37129
+660LEA,Northampton County Schools,Northampton County Schools,Northampton,3703420,37131
+670LEA,Onslow County Schools,Onslow County Schools,Onslow,3703450,37133
+680LEA,Orange County Schools,Orange County Schools,Orange,3703480,37135
+681LEA,Chapel Hill-Carrboro City Schools,Chapel Hill-Carrboro City Schools,Orange,3700720,37135
+690LEA,Pamlico County Schools,Pamlico County Schools,Pamlico,3703510,37137
+700LEA,Elizabeth City-Pasquotank Public Schools,Elizabeth City-Pasquotank Public Schools,Pasquotank,3703540,37139
+710LEA,Pender County Schools,Pender County Schools,Pender,3703570,37141
+720LEA,Perquimans County Schools,Perquimans County Schools,Perquimans,3703600,37143
+730LEA,Person County Schools,Person County Schools,Person,3703630,37145
+740LEA,Pitt County Schools,Pitt County Schools,Pitt,3700012,37147
+750LEA,Polk County Schools,Polk County Schools,Polk,3703720,37149
+760LEA,Randolph County School System,Randolph County School System,Randolph,3703780,37151
+761LEA,Asheboro City Schools,Asheboro City Schools,Randolph,3700240,37151
+770LEA,Richmond County Schools,Richmond County Schools,Richmond,3703870,37153
+780LEA,Public Schools of Robeson County,Public Schools of Robeson County,Robeson,3703930,37155
+790LEA,Rockingham County Schools,Rockingham County Schools,Rockingham,3703990,37157
+800LEA,Rowan-Salisbury Schools,Rowan-Salisbury Schools,Rowan,3704050,37159
+810LEA,Rutherford County Schools,Rutherford County Schools,Rutherford,3704080,37161
+820LEA,Sampson County Schools,Sampson County Schools,Sampson,3704140,37163
+821LEA,Clinton City Schools,Clinton City Schools,Sampson,3700930,37163
+830LEA,Scotland County Schools,Scotland County Schools,Scotland,3704200,37165
+840LEA,Stanly County Schools,Stanly County Schools,Stanly,3704320,37167
+850LEA,Stokes County Schools,Stokes County Schools,Stokes,3704380,37169
+860LEA,Surry County Schools,Surry County Schools,Surry,3704410,37171
+861LEA,Elkin City Schools,Elkin City Schools,Surry,3701380,37171
+862LEA,Mount Airy City Schools,Mount Airy City Schools,Surry,3703210,37171
+870LEA,Swain County Schools,Swain County Schools,Swain,3704440,37173
+880LEA,Transylvania County Schools,Transylvania County Schools,Transylvania,3704530,37175
+890LEA,Tyrrell County Schools,Tyrrell County Schools,Tyrrell,3704590,37177
+900LEA,Union County Public Schools,Union County Public Schools,Union,3704620,37179
+910LEA,Vance County Schools,Vance County Schools,Vance,3704650,37181
+920LEA,Wake County Schools,Wake County Schools,Wake,3704720,37183
+930LEA,Warren County Schools,Warren County Schools,Warren,3704740,37185
+940LEA,Washington County Schools,Washington County Schools,Washington,3704800,37187
+950LEA,Watauga County Schools,Watauga County Schools,Watauga,3704830,37189
+960LEA,Wayne County Public Schools,Wayne County Public Schools,Wayne,3704880,37191
+970LEA,Wilkes County Schools,Wilkes County Schools,Wilkes,3704950,37193
+980LEA,Wilson County Schools,Wilson County Schools,Wilson,3705020,37195
+990LEA,Yadkin County Schools,Yadkin County Schools,Yadkin,3705040,37197
+995LEA,Yancey County Schools,Yancey County Schools,Yancey,3705070,37199
