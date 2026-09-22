@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CHCCS Enrollment Podcast</title>
+<meta name="description" content="Three-chapter companion for a conversation about Chapel Hill-Carrboro City Schools' declining elementary enrollment: the district, the state, and demographics.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,.10); --neutral: #f0efec;
+    --pos: #2a78d6; --pos-deep: #0d366b; --neg: #e34948; --neg-deep: #7a1717;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s7: #4a3aa7;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 6px 20px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --page: #0d0d0d; --surface: #1a1a19; --ink: #fff; --ink-2: #c3c2b7; --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10); --neutral: #383835; --pos: #3987e5; --pos-deep: #9ec5f4; --neg: #e66767; --neg-deep: #ffb3b3; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s7: #9085e9; --shadow: none; } }
+  :root[data-theme="dark"] { color-scheme: dark; --page: #0d0d0d; --surface: #1a1a19; --ink: #fff; --ink-2: #c3c2b7; --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10); --neutral: #383835; --pos: #3987e5; --pos-deep: #9ec5f4; --neg: #e66767; --neg-deep: #ffb3b3; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s7: #9085e9; --shadow: none; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--page); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 17px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px 80px; }
+  header.top { padding: 22px 0 8px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  header.top h1 { font-size: 22px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+  header.top p { margin: 2px 0 0; color: var(--ink-2); font-size: 15px; }
+  .nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--page) 90%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 10px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .nav a { text-decoration: none; color: var(--ink-2); border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 9px 16px; font-size: 15px; display: inline-flex; gap: 10px; align-items: center; }
+  .nav a b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--neutral); color: var(--ink); font-size: 13px; }
+  .nav a.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .nav a.active b { background: var(--surface); color: var(--ink); }
+  .nav .spacer { flex: 1; }
+  .nav .hint { color: var(--muted); font-size: 13px; }
+  .theme-btn { border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); border-radius: 8px; padding: 7px 11px; font: inherit; font-size: 13px; cursor: pointer; }
+
+  section.chapter { padding: 44px 0 24px; border-bottom: 1px solid var(--border); scroll-margin-top: 70px; }
+  .kicker { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: var(--muted); font-weight: 600; }
+  section.chapter h2 { font-size: 34px; line-height: 1.15; margin: 6px 0 10px; font-weight: 700; letter-spacing: -0.015em; max-width: 980px; }
+  section.chapter p.lede { font-size: 19px; color: var(--ink-2); margin: 0 0 22px; max-width: 900px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0 0 18px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .tile .v { font-size: 38px; font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  .tile .v.neg { color: var(--neg); } .tile .v.pos { color: var(--pos); }
+  .tile .l { color: var(--ink-2); font-size: 14px; margin-top: 6px; line-height: 1.35; }
+  .grid { display: grid; gap: 14px; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .grid.even { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 960px) { .grid, .grid.even { grid-template-columns: 1fr; } section.chapter h2 { font-size: 27px; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px 14px; box-shadow: var(--shadow); min-width: 0; }
+  .card h3 { margin: 0 0 2px; font-size: 17px; font-weight: 650; }
+  .card p.sub { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+  .card svg { display: block; width: 100%; height: auto; }
+  .points { margin: 16px 0 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 20px; }
+  .points h3 { margin: 0 0 6px; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .points ul { margin: 0; padding-left: 20px; }
+  .points li { margin: 6px 0; font-size: 16px; }
+  .points li b { font-weight: 650; }
+  .axis text { fill: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .axis line, .axis path { stroke: var(--axis); }
+  .gridline { stroke: var(--grid); }
+  .lbl { font-size: 13px; font-weight: 650; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+  .lbl.muted { fill: var(--ink-2); font-weight: 500; }
+  .ann { font-size: 13px; fill: var(--ink-2); }
+  .tt { position: fixed; z-index: 50; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; box-shadow: 0 4px 20px rgba(0,0,0,.12); display: none; max-width: 280px; }
+  .tt .t { font-weight: 650; } .tt .row { display: flex; justify-content: space-between; gap: 14px; } .tt .row span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; } .tt .k { color: var(--ink-2); }
+  .mini-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .mini { border: 1px solid var(--border); border-radius: 10px; padding: 10px 10px 6px; position: relative; }
+  .mini.closure { border-color: var(--s2); box-shadow: inset 0 0 0 1px var(--s2); }
+  .mini .n { font-size: 14px; font-weight: 650; line-height: 1.2; }
+  .mini .tag { display: inline-block; margin: 2px 0 2px; padding: 1px 6px; border-radius: 999px; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--s2); border: 1px solid var(--s2); font-weight: 700; }
+  .mini .d { font-size: 12px; color: var(--ink-2); margin-top: 2px; } .mini .d b.neg { color: var(--neg); } .mini .d b.pos { color: var(--pos); }
+  .mini svg { height: 54px; margin-top: 4px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+  .legend i { display: inline-block; width: 16px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+  .legend i.dash { height: 0; border-top: 3px dashed; background: none; }
+  .legend .bar { flex: 0 0 200px; height: 10px; border-radius: 5px; border: 1px solid var(--border); }
+  .footnote { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: var(--neutral); padding: 1px 4px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--neutral)"></rect><line x1="0" y1="0" x2="0" y2="6" stroke="var(--axis)" stroke-width="1"></line></pattern></defs></svg>
+<div class="wrap">
+  <header class="top">
+    <div><h1>Chapel Hill-Carrboro's shrinking elementary schools, in three chapters</h1><p>A companion to the conversation. Same data as the full dashboard, fewer knobs.</p></div>
+    <button class="theme-btn" id="themeBtn" type="button">Toggle dark mode</button>
+  </header>
+  <nav class="nav" id="nav">
+    <a href="#ch1" data-ch="ch1" class="active"><b>1</b>CHCCS elementary</a>
+    <a href="#ch2" data-ch="ch2"><b>2</b>Across the state</a>
+    <a href="#ch3" data-ch="ch3"><b>3</b>Is it demographics?</a>
+    <span class="spacer"></span><span class="hint">&larr; &rarr; keys move between chapters</span>
+  </nav>
+
+  <!-- ============================== CHAPTER 1 ============================== -->
+  <section class="chapter" id="ch1">
+    <div class="kicker">Chapter 1 &middot; Chapel Hill-Carrboro City Schools</div>
+    <h2 id="h1">Elementary enrollment peaked in 2016-17 and has fallen every year since.</h2>
+    <p class="lede" id="lede1"></p>
+    <div class="tiles" id="tiles1"></div>
+    <div class="grid">
+      <div class="card"><h3>Students in CHCCS's 11 elementary schools, 2005-06 to 2024-25, and the district's own forecast to 2035-36</h3><p class="sub">Solid: average daily membership (ADM), the state's official count, pre-K excluded. Dashed: the K-5 forecast the district commissioned from Carolina Demography (closure study, May 2026), which starts from its 2025-26 count. Axis does not start at zero.</p><svg id="c1a" viewBox="0 0 760 360" role="img"></svg></div>
+      <div class="card"><h3>Elementary vs. the rest of the district</h3><p class="sub">Percent change since 2016-17, the elementary peak, with the axis starting two years earlier. Elementary began falling three years before the rest of the district.</p><svg id="c1b" viewBox="0 0 500 360" role="img"></svg></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>School by school</h3><p class="sub">Each school's ADM, 2005-06 to 2024-25. Dot marks the school's peak year. Orange border marks the three schools named in the 2026 closure study.</p><div class="mini-grid" id="c1c"></div></div>
+    <div class="points" id="pts1"><h3>Talking points</h3><ul></ul></div>
+  </section>
+
+  <!-- ============================== CHAPTER 2 ============================== -->
+  <section class="chapter" id="ch2">
+    <div class="kicker">Chapter 2 &middot; Across North Carolina</div>
+    <h2 id="h2">Elementary enrollment is falling almost everywhere in the state. CHCCS is falling faster than most.</h2>
+    <p class="lede" id="lede2"></p>
+    <div class="tiles" id="tiles2"></div>
+    <div class="grid even">
+      <div class="card"><h3>CHCCS and its neighbors against the state</h3><p class="sub">District elementary-school ADM, percent change since 2016-17. Black line is all 115 districts combined.</p><svg id="c2a" viewBox="0 0 620 380" role="img"></svg><div class="legend" id="leg2a"></div></div>
+      <div class="card"><h3>Every district: elementary change since 2016-17</h3><p class="sub">Red is decline, blue is growth. Bold outline is the Triangle; CHCCS is the small district inside it. Hover for names.</p><svg id="c2b" viewBox="0 0 620 330" role="img"></svg><div class="legend" id="leg2b"></div></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>Where CHCCS sits among 112 districts with elementary schools</h3><p class="sub">Each dot is a district's elementary change from 2016-17 to 2024-25. Steepest declines on the left.</p><svg id="c2c" viewBox="0 0 1200 240" role="img"></svg></div>
+    <div class="points" id="pts2"><h3>Talking points</h3><ul></ul></div>
+  </section>
+
+  <!-- ============================== CHAPTER 3 ============================== -->
+  <section class="chapter" id="ch3">
+    <div class="kicker">Chapter 3 &middot; One explanation to test</div>
+    <h2 id="h3">The community isn't shrinking. Its elementary schools are.</h2>
+    <p class="lede" id="lede3"></p>
+    <div class="tiles" id="tiles3"></div>
+    <div class="card" style="margin-bottom:14px"><h3 id="c3zTitle">CHCCS: the community isn't shrinking. Its elementary schools are.</h3><p class="sub">Percent change since 2016-17 for the CHCCS district: residents of all ages and residents aged 5 to 17 (Census SAIPE estimates for the district's boundary, July of each school year's ending year, as in the notebook; the 2024 estimate is the latest), K-12 enrollment and elementary-school enrollment (NC DPI ADM, through 2024-25).</p><svg id="c3z" viewBox="0 0 1200 460" role="img"></svg><div class="legend" id="leg3z"></div></div>
+    <div class="grid even">
+      <div class="card"><h3>Children in Orange County vs. students in its elementary schools</h3><p class="sub">Percent change since 2016-17. Census estimates of county residents aged 5 to 9 and under 5, through 2023-24 (the Census publishes single age groups by county, not by district); elementary ADM is CHCCS plus Orange County Schools, through 2024-25.</p><svg id="c3a" viewBox="0 0 620 380" role="img"></svg><div class="legend" id="leg3a"></div></div>
+      <div class="card"><h3>Every district: change in children vs. change in enrollment</h3><p class="sub">2016-17 to 2023-24, the latest year with a Census estimate. Horizontal: residents aged 5 to 17 (Census). Vertical: district ADM, all grades. Below the diagonal, enrollment fell faster than the child population.</p><svg id="c3b" viewBox="0 0 620 380" role="img"></svg></div>
+    </div>
+    <div class="grid" style="margin-top:14px">
+      <div class="card"><h3>If not only demographics, then what? Orange County students by sector</h3><p class="sub">2016-17 compared with 2024-25. Charter, private and home school students are counted where the school or household is located in Orange County.</p><svg id="c3c" viewBox="0 0 760 300" role="img"></svg></div>
+      <div class="card"><h3>What the numbers can and cannot say</h3><div id="c3d" style="font-size:15px;color:var(--ink-2)"></div></div>
+    </div>
+    <div class="points" id="pts3"><h3>Talking points</h3><ul></ul></div>
+    <p class="footnote">Sources: NC DPI School Report Card data (ADM, 2005-06 to 2024-25); U.S. Census Bureau population estimates and SAIPE; NC DNPE private and home school reports; NCSEAA. Full method and caveats: <code>LIMITATIONS.md</code> and the four-tab dashboard in the same folder.</p>
+  </section>
+
+</div>
+<div class="tt" id="tt"></div>
+
+<script><!--__D3__--></script>
+<script><!--__TOPOJSON__--></script>
+<script>if (location.hash === '#dark' || location.hash === '#light') document.documentElement.dataset.theme = location.hash.slice(1);</script>
+<script>const DATA = /*__DATA__*/null; const DATA2 = /*__DATA2__*/null; const PODCAST = /*__PODCAST__*/null;</script>
+<script>
+(function () {
+  'use strict';
+  const Y = DATA.years, N = Y.length, BS = DATA.bySpan, P = PODCAST;
+  const fmt = d3.format(','), sy = y => (y - 1) + '-' + String(y).slice(2);
+  const signed = (v, d = 1) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(d);
+  const pct = (a, b) => (a / b - 1) * 100;
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; };
+  const tt = document.getElementById('tt');
+  const showTip = (nodes, ev) => { tt.replaceChildren(...nodes); tt.style.display = 'block'; moveTip(ev); };
+  const moveTip = ev => { const w = tt.offsetWidth, h = tt.offsetHeight; let x = ev.clientX + 14, y = ev.clientY + 14; if (x + w > innerWidth - 8) x = ev.clientX - w - 14; if (y + h > innerHeight - 8) y = ev.clientY - h - 14; tt.style.left = x + 'px'; tt.style.top = y + 'px'; };
+  const hideTip = () => { tt.style.display = 'none'; };
+  const row = (k, v) => { const r = el('div', 'row'); r.append(el('span', 'k', k), el('span', '', v)); return r; };
+  const BASE = 2017, bi = Y.indexOf(BASE), last = N - 1;
+  const isNum = v => v !== null && v !== undefined && Number.isFinite(v);
+  const chg = (s, b = bi) => s.map(v => isNum(v) && isNum(s[b]) ? (v / s[b] - 1) * 100 : null);   // percent change from the base year
+  const lastOf = v => { for (let k = v.length - 1; k >= 0; k--) if (isNum(v[k])) return k; return 0; };
+  const pctFmt = v => signed(v, 0) + '%';
+  const COVID_X = 2020.5;
+
+  // ------------------------------------------------------------- series
+  const chccsE = BS.leas['681LEA'].E, chccsAll = DATA.leas['681LEA'].adm;
+  const chccsRest = chccsAll.map((v, i) => v - chccsE[i]);
+  const ocsE = BS.leas['680LEA'].E;
+  const stateE = BS.stateLea.E, stateAll = DATA.state.lea;
+  const orangeE = chccsE.map((v, i) => v + ocsE[i]);
+  const ages = P.orangeAges;
+  const leaE = code => BS.leas[code].E;
+  const leaCum = code => { const s = leaE(code); return s[bi] > 0 && s[last] > 0 ? pct(s[last], s[bi]) : null; };
+  const allCum = Object.keys(DATA.leas).map(code => ({ code, name: DATA.leas[code].name, v: leaCum(code) })).filter(d => d.v !== null);
+  const median = d3.median(allCum, d => d.v);
+  const rank = allCum.slice().sort((a, b) => a.v - b.v).findIndex(d => d.code === '681LEA') + 1;
+  const cPk = d3.maxIndex(chccsE), sPk = d3.maxIndex(stateE), aPk = d3.maxIndex(chccsAll);
+  const kidsPk = d3.maxIndex(ages.age5_9);
+
+  // ------------------------------------------------------------- shared chart helpers
+  function frame(svg, W, H, M, x, y, opts = {}) {
+    svg.selectAll('*').remove();
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)').call(d3.axisLeft(y).ticks(opts.yTicks || 6).tickFormat(opts.yFmt || (v => fmt(v))).tickSize(-(W - M.r - M.l))).call(g => { g.select('.domain').remove(); g.selectAll('line').attr('class', 'gridline'); });
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (H - M.b) + ')').call(d3.axisBottom(x).ticks(opts.xTicks || 8).tickFormat(v => sy(v)).tickSize(4));
+  }
+  function covidBand(svg, x, M, H, label = true) {
+    svg.append('rect').attr('x', x(2020.5)).attr('y', M.t).attr('width', x(2021.5) - x(2020.5)).attr('height', H - M.b - M.t).attr('fill', cssVar('--neutral')).attr('opacity', 0.9);
+    if (label) svg.append('text').attr('class', 'ann').attr('x', x(2021)).attr('y', M.t + 14).attr('text-anchor', 'middle').text('COVID year');
+  }
+  function endLabels(svg, items, x, y, xEnd) {
+    const labs = items.map(d => ({ ...d, ly: y(d.v) })).sort((a, b) => a.ly - b.ly);
+    for (let i = 1; i < labs.length; i++) if (labs[i].ly - labs[i - 1].ly < 16) labs[i].ly = labs[i - 1].ly + 16;
+    svg.selectAll('text.end').data(labs).join('text').attr('class', d => 'lbl' + (d.muted ? ' muted' : '')).attr('x', xEnd + 8).attr('y', d => d.ly).attr('dy', '0.35em').text(d => d.text);
+  }
+  // label at each series' own last defined value, noting the year when it ends early
+  const endItems = (ser, nameOfSeries, fmtVal) => ser.map(s => { const li = lastOf(s.vals); return { v: s.vals[li], text: nameOfSeries(s) + ' ' + fmtVal(s.vals[li]) + (li < last ? ' (' + sy(Y[li]) + ')' : ''), muted: s.dash }; });
+  function hoverYears(svg, x, M, W, H, series, extra) {
+    const hover = svg.append('g').style('display', 'none');
+    const hl = hover.append('line').attr('stroke', cssVar('--ink')).attr('opacity', .5).attr('y1', M.t).attr('y2', H - M.b);
+    svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.r - M.l).attr('height', H - M.b - M.t).attr('fill', 'transparent').style('cursor', 'crosshair')
+      .on('pointerenter', () => hover.style('display', null)).on('pointerleave', () => { hover.style('display', 'none'); hideTip(); })
+      .on('pointermove', ev => { const [mx] = d3.pointer(ev); const i = Y.indexOf(Math.max(Y[0], Math.min(Y[last], Math.round(x.invert(mx))))); hl.attr('x1', x(Y[i])).attr('x2', x(Y[i])); showTip([el('div', 't', sy(Y[i]))].concat(series.map(s => row(s.name, s.fmt ? s.fmt(s.vals[i]) : fmt(s.vals[i])))).concat(extra ? extra(i) : []), ev); });
+  }
+
+  // ============================================================= CHAPTER 1
+  (function ch1() {
+    const drop = pct(chccsE[last], chccsE[cPk]), covidDrop = pct(chccsE[Y.indexOf(2021)], chccsE[Y.indexOf(2020)]);
+    const yearsDown = (() => { let n = 0; for (let i = last; i > 0 && chccsE[i] < chccsE[i - 1]; i--) n++; return n; })();
+    document.getElementById('lede1').textContent = 'CHCCS had ' + fmt(chccsE[cPk]) + ' students in its elementary schools in ' + sy(Y[cPk]) + '. In ' + sy(Y[last]) + ' it had ' + fmt(chccsE[last]) + ', a loss of ' + fmt(chccsE[cPk] - chccsE[last]) + ' students, or about two schools’ worth. The district as a whole (' + fmt(chccsAll[last]) + ' students) is down ' + signed(pct(chccsAll[last], chccsAll[aPk]), 1) + '% from its ' + sy(Y[aPk]) + ' peak, so the elementary grades are where the decline is concentrated.';
+    const tiles = [
+      { v: fmt(chccsE[last]), l: 'elementary students, ' + sy(Y[last]) + ' (11 schools)' },
+      { v: signed(drop) + '%', l: 'since the ' + sy(Y[cPk]) + ' peak of ' + fmt(chccsE[cPk]), cls: 'neg' },
+      { v: signed(covidDrop) + '%', l: 'in the single COVID year (' + sy(2020) + ' to ' + sy(2021) + '), with no rebound after', cls: 'neg' },
+      { v: yearsDown, l: 'straight years of decline through ' + sy(Y[last]) },
+    ];
+    const th = document.getElementById('tiles1'); for (const t of tiles) { const k = el('div', 'tile'); k.append(el('div', 'v' + (t.cls ? ' ' + t.cls : ''), String(t.v)), el('div', 'l', t.l)); th.append(k); }
+
+    // 1a: CHCCS elementary ADM
+    { const svg = d3.select('#c1a'), W = 760, H = 360, M = { t: 28, r: 40, b: 36, l: 60 };
+      const B = P.board, fy = B.years, fv = B.elementary;
+      const x = d3.scaleLinear().domain([Y[0], fy[fy.length - 1]]).range([M.l, W - M.r]), y = d3.scaleLinear().domain([4000, 5800]).range([H - M.b, M.t]);
+      frame(svg, W, H, M, x, y, { xTicks: 6 });
+      covidBand(svg, x, M, H);
+      svg.append('rect').attr('x', x(Y[last])).attr('y', M.t).attr('width', x(fy[fy.length - 1]) - x(Y[last])).attr('height', H - M.b - M.t).attr('fill', cssVar('--neutral')).attr('opacity', .45);
+      svg.append('text').attr('class', 'ann').attr('x', x(fy[fy.length - 1]) - 4).attr('y', M.t + 14).attr('text-anchor', 'end').text('district forecast');
+      svg.append('path').attr('d', d3.line().x((d, i) => x(i === 0 ? Y[last] : fy[i - 1])).y(d => y(d))([chccsE[last]].concat(fv))).attr('fill', 'none').attr('stroke', cssVar('--s1')).attr('stroke-width', 2.5).attr('stroke-dasharray', '6 5');
+      svg.append('g').selectAll('circle').data(fv.map((v, i) => [fy[i], v])).join('circle').attr('cx', d => x(d[0])).attr('cy', d => y(d[1])).attr('r', 3.5).attr('fill', cssVar('--surface')).attr('stroke', cssVar('--s1')).attr('stroke-width', 2)
+        .on('pointerenter', (ev, d) => showTip([el('div', 't', sy(d[0]) + ' (district forecast)'), row('K-5 students', fmt(d[1])), el('div', 'k', 'Carolina Demography forecast, closure study May 2026')], ev)).on('pointermove', moveTip).on('pointerleave', hideTip);
+      svg.append('text').attr('class', 'lbl muted').attr('x', x(fy[0])).attr('y', y(fv[0]) + 22).attr('text-anchor', 'middle').text(sy(fy[0]) + ': ' + fmt(fv[0]));
+      svg.append('text').attr('class', 'lbl muted').attr('x', x(fy[fy.length - 1])).attr('y', y(fv[fy.length - 1]) + 22).attr('text-anchor', 'end').text(sy(fy[fy.length - 1]) + ': ' + fmt(fv[fy.length - 1]));
+      svg.append('path').attr('d', d3.area().x((d, i) => x(Y[i])).y0(y(4000)).y1(d => y(d))(chccsE)).attr('fill', cssVar('--s1')).attr('opacity', .12);
+      svg.append('path').attr('d', d3.line().x((d, i) => x(Y[i])).y(d => y(d))(chccsE)).attr('fill', 'none').attr('stroke', cssVar('--s1')).attr('stroke-width', 3).attr('stroke-linejoin', 'round');
+      svg.append('circle').attr('cx', x(Y[cPk])).attr('cy', y(chccsE[cPk])).attr('r', 6).attr('fill', cssVar('--ink')).attr('stroke', cssVar('--surface')).attr('stroke-width', 2);
+      svg.append('text').attr('class', 'lbl').attr('x', x(Y[cPk]) - 10).attr('y', y(chccsE[cPk]) - 12).attr('text-anchor', 'end').text('Peak ' + sy(Y[cPk]) + ': ' + fmt(chccsE[cPk]));
+      svg.append('circle').attr('cx', x(Y[last])).attr('cy', y(chccsE[last])).attr('r', 6).attr('fill', cssVar('--s1')).attr('stroke', cssVar('--surface')).attr('stroke-width', 2);
+      svg.append('text').attr('class', 'lbl').attr('x', x(Y[last]) - 10).attr('y', y(chccsE[last]) - 4).attr('text-anchor', 'end').text(sy(Y[last]) + ': ' + fmt(chccsE[last]));
+      svg.append('text').attr('class', 'lbl').attr('x', x(Y[last]) - 10).attr('y', y(chccsE[last]) + 14).attr('text-anchor', 'end').attr('fill', cssVar('--neg')).text(signed(drop) + '% from peak');
+      hoverYears(svg, x, M, W, H, [{ name: 'Elementary ADM', vals: chccsE }, { name: 'All CHCCS ADM', vals: chccsAll }]);
+    }
+    // 1b: elementary vs rest, indexed to 2016-17
+    { const svg = d3.select('#c1b'), W = 500, H = 360, M = { t: 28, r: 128, b: 36, l: 44 }, b16 = Y.indexOf(2017);
+      const ser = [{ name: 'Elementary (K-5)', vals: chg(chccsE, b16), color: cssVar('--s1'), w: 3 }, { name: 'Middle + high (6-12)', vals: chg(chccsRest, b16), color: cssVar('--s7'), w: 2 }];
+      const allv = ser.flatMap(s => s.vals);
+      const X0 = 2015, allShown = ser.flatMap(s => s.vals.slice(Y.indexOf(X0)));
+      const x = d3.scaleLinear().domain([X0, Y[last]]).range([M.l, W - M.r]), y = d3.scaleLinear().domain([Math.min(d3.min(allShown), 0) - 3, Math.max(d3.max(allShown), 0) + 3]).nice().range([H - M.b, M.t]);
+      frame(svg, W, H, M, x, y, { xTicks: 5, yFmt: pctFmt });
+      covidBand(svg, x, M, H, false);
+      svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', cssVar('--ink')).attr('opacity', .6);
+      svg.append('text').attr('class', 'ann').attr('x', x(BASE) + 6).attr('y', y(0) - 6).text(sy(BASE) + ' = 0');
+      svg.append('circle').attr('cx', x(BASE)).attr('cy', y(0)).attr('r', 4).attr('fill', cssVar('--ink'));
+      for (const s of ser) svg.append('path').attr('d', d3.line().x((d, i) => x(Y[i])).y(d => y(d)).defined((d, i) => Y[i] >= X0)(s.vals)).attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', s.w).attr('stroke-linejoin', 'round');
+      endLabels(svg, ser.map(s => ({ v: s.vals[last], text: s.name.split(' (')[0] + ' ' + pctFmt(s.vals[last]) })), x, y, x(Y[last]));
+      svg.append('text').attr('class', 'ann').attr('x', M.l).attr('y', 16).text('Percent change since ' + sy(BASE) + ' (the elementary peak)');
+      hoverYears(svg, x, M, W, H, [{ name: 'Elementary', vals: ser[0].vals, fmt: v => signed(v) + '%' }, { name: 'Middle + high', vals: ser[1].vals, fmt: v => signed(v) + '%' }, { name: 'Elementary ADM', vals: chccsE }, { name: 'Middle + high ADM', vals: chccsRest }]);
+    }
+    // 1c: school small multiples
+    { const host = document.getElementById('c1c');
+      const entries = Object.entries(P.chccsSchools).sort((a, b) => d3.ascending(a[1].name, b[1].name));
+      for (const [code, s] of entries) {
+        const vals = s.adm.map((v, i) => [i, v]).filter(d => d[1] !== null), pk = vals.reduce((a, b) => b[1] > a[1] ? b : a)[0], cur = s.adm[last];
+        const card = el('div', 'mini' + (P.closureCandidates.includes(code) ? ' closure' : ''));
+        card.append(el('div', 'n', s.name));
+        if (P.closureCandidates.includes(code)) card.append(el('span', 'tag', 'closure study'));
+        const d = el('div', 'd'); const ch = pct(cur, s.adm[pk]); d.append(document.createTextNode(fmt(cur) + ' students · '), Object.assign(el('b', ch < 0 ? 'neg' : 'pos'), { textContent: signed(ch, 0) + '%' }), document.createTextNode(' vs peak ' + sy(Y[pk]))); card.append(d);
+        const w = 200, h = 54, svg = d3.create('svg').attr('viewBox', [0, 0, w, h]).attr('preserveAspectRatio', 'none');
+        const x = d3.scaleLinear().domain([Y[0], Y[last]]).range([3, w - 3]), y = d3.scaleLinear().domain([300, 720]).range([h - 3, 4]);
+        svg.append('rect').attr('x', x(2020.5)).attr('width', x(2021.5) - x(2020.5)).attr('y', 0).attr('height', h).attr('fill', cssVar('--neutral'));
+        svg.append('path').attr('d', d3.line().x(d => x(Y[d[0]])).y(d => y(d[1]))(vals)).attr('fill', 'none').attr('stroke', P.closureCandidates.includes(code) ? cssVar('--s2') : cssVar('--s1')).attr('stroke-width', 2);
+        svg.append('circle').attr('cx', x(Y[pk])).attr('cy', y(s.adm[pk])).attr('r', 3).attr('fill', cssVar('--ink'));
+        card.append(svg.node());
+        card.addEventListener('pointerenter', ev => showTip([el('div', 't', s.name), row('ADM ' + sy(Y[last]), fmt(cur)), row('Peak ' + sy(Y[pk]), fmt(s.adm[pk])), row('First year in data', sy(Y[vals[0][0]]))], ev)); card.addEventListener('pointermove', moveTip); card.addEventListener('pointerleave', hideTip);
+        host.append(card);
+      }
+    }
+    const below = Object.values(P.chccsSchools).filter(s => s.adm[last] < d3.max(s.adm.filter(v => v !== null))).length;
+    const pts = [
+      '<b>Elementary led the decline.</b> Elementary enrollment peaked in ' + sy(Y[cPk]) + '; the district as a whole peaked in ' + sy(Y[aPk]) + '. Fewer kindergartners today means fewer middle and high school students later.',
+      '<b>COVID was a step down, not a dip.</b> Elementary ADM fell ' + signed(covidDrop) + '% in ' + sy(2021) + ' and has not recovered; each year since has been lower than the last.',
+      '<b>It is every school, not one school.</b> ' + below + ' of 11 elementary schools are below their own peak. The three named in the closure study are not the three smallest: in the district\u2019s 2025-26 count Estes Hills (' + fmt(P.board.schools['681312']['2026']) + ') and Northside (' + fmt(P.board.schools['681300']['2026']) + ') are smaller than Ephesus (' + fmt(P.board.schools['681311']['2026']) + '), and the forecast has Ephesus growing to ' + fmt(P.board.schools['681311']['2036']) + ' and Glenwood growing too. The closure choice was not about enrollment alone.',
+      '<b>The district expects the slide to stop.</b> Its own forecast (Carolina Demography, May 2026) starts at ' + fmt(P.board.elementary[0]) + ' K-5 students in 2025-26 and ends at ' + fmt(P.board.elementary[P.board.elementary.length - 1]) + ' in 2035-36, nearly flat. The last five years averaged about ' + signed(((chccsE[last] / chccsE[last - 5]) ** (1 / 5) - 1) * 100, 1) + '% a year. Which one is right is the question for the next decade.',
+      '<b>Scale.</b> The ' + fmt(chccsE[cPk] - chccsE[last]) + ' students lost since ' + sy(Y[cPk]) + ' is about two average CHCCS elementary schools (' + fmt(Math.round(chccsE[last] / 11)) + ' students each in ' + sy(Y[last]) + ').',
+    ];
+    const ul = document.querySelector('#pts1 ul'); for (const p of pts) { const li = el('li'); li.innerHTML = p; ul.append(li); }
+  })();
+
+  // ============================================================= CHAPTER 2
+  (function ch2() {
+    const stDrop = pct(stateE[last], stateE[sPk]), cCum = leaCum('681LEA');
+    const growing = allCum.filter(d => d.v > 0).length;
+    const chE = BS.stateCharter.E.map((v, i) => v + BS.stateCharter.I[i]);
+    document.getElementById('lede2').textContent = 'Across all 115 districts, elementary-school enrollment peaked in ' + sy(Y[sPk]) + ' at ' + fmt(stateE[sPk]) + ' and stands at ' + fmt(stateE[last]) + ' in ' + sy(Y[last]) + ', down ' + signed(stDrop, 1) + '%. Since ' + sy(BASE) + ', the median district lost ' + signed(median, 1) + '% of its elementary students; CHCCS lost ' + signed(cCum, 1) + '%. Only ' + growing + ' of ' + allCum.length + ' districts grew.';
+    const tiles = [
+      { v: signed(stDrop) + '%', l: 'all NC district elementary schools since their ' + sy(Y[sPk]) + ' peak', cls: 'neg' },
+      { v: signed(median) + '%', l: 'median district, elementary change ' + sy(BASE) + ' to ' + sy(Y[last]), cls: 'neg' },
+      { v: signed(cCum) + '%', l: 'CHCCS over the same period, rank ' + rank + ' of ' + allCum.length + ' (1 = steepest decline)', cls: 'neg' },
+      { v: fmt(chE[last]), l: 'students in elementary and K-8 charter schools statewide, up from ' + fmt(chE[bi]) + ' in ' + sy(BASE), cls: 'pos' },
+    ];
+    const th = document.getElementById('tiles2'); for (const t of tiles) { const k = el('div', 'tile'); k.append(el('div', 'v' + (t.cls ? ' ' + t.cls : ''), String(t.v)), el('div', 'l', t.l)); th.append(k); }
+    // 2a: indexed lines
+    { const svg = d3.select('#c2a'), W = 620, H = 380, M = { t: 28, r: 150, b: 36, l: 44 };
+      const ser = [
+        { name: 'CHCCS', vals: chg(chccsE), color: cssVar('--s1'), w: 3.5 },
+        { name: 'Orange County Schools', vals: chg(ocsE), color: cssVar('--s2'), w: 2 },
+        { name: 'Durham', vals: chg(leaE('320LEA')), color: cssVar('--s3'), w: 2 },
+        { name: 'Wake', vals: chg(leaE('920LEA')), color: cssVar('--s4'), w: 2 },
+        { name: 'Chatham', vals: chg(leaE('190LEA')), color: cssVar('--s5'), w: 2 },
+        { name: 'All NC districts', vals: chg(stateE), color: cssVar('--ink'), w: 2.5 },
+      ];
+      const allv = ser.flatMap(s => s.vals.slice(bi));
+      const x = d3.scaleLinear().domain([BASE, Y[last]]).range([M.l, W - M.r]), y = d3.scaleLinear().domain([d3.min(allv) - 2, d3.max(allv) + 2]).nice().range([H - M.b, M.t]);
+      frame(svg, W, H, M, x, y, { xTicks: 6, yFmt: pctFmt });
+      covidBand(svg, x, M, H, false);
+      svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', cssVar('--ink')).attr('opacity', .5);
+      const line = d3.line().x((d, i) => x(Y[i])).y(d => y(d)).defined((d, i) => Y[i] >= BASE);
+      for (const s of ser) svg.append('path').attr('d', line(s.vals)).attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', s.w).attr('stroke-linejoin', 'round');
+      endLabels(svg, ser.map(s => ({ v: s.vals[last], text: s.name.replace('Orange County Schools', 'Orange Co.').replace('All NC districts', 'All NC') + ' ' + pctFmt(s.vals[last]) })), x, y, x(Y[last]));
+      svg.append('text').attr('class', 'ann').attr('x', M.l).attr('y', 16).text('Change since ' + sy(BASE));
+      hoverYears(svg, x, M, W, H, ser.map(s => ({ name: s.name, vals: s.vals, fmt: v => signed(v) + '%' })));
+      const lg = document.getElementById('leg2a'); for (const s of ser) { const sp = el('span'); const i = el('i'); i.style.background = s.color; sp.append(i, document.createTextNode(s.name)); lg.append(sp); }
+    }
+    // 2b: map
+    { const svg = d3.select('#c2b'), W = 620, H = 330;
+      const topo = DATA.topology, feats = topojson.feature(topo, topo.objects.data).features;
+      for (const f of feats) { const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates; for (const poly of polys) poly.forEach((ring, i) => { if ((d3.geoArea({ type: 'Polygon', coordinates: [ring] }) > 2 * Math.PI) !== (i > 0)) ring.reverse(); }); }
+      const leas = feats.filter(f => f.properties.layer === 'lea'), counties = feats.filter(f => f.properties.layer === 'county');
+      const proj = d3.geoAlbers().rotate([79.6, 0]).center([0, 35.5]).parallels([34.4, 36.3]).fitExtent([[6, 6], [W - 6, H - 6]], { type: 'FeatureCollection', features: counties });
+      const path = d3.geoPath(proj);
+      const cumBy = new Map(allCum.map(d => [d.code, d.v]));
+      const neutral = cssVar('--neutral'), left = d3.piecewise(d3.interpolateLab, [cssVar('--neg-deep'), cssVar('--neg'), neutral]), right = d3.piecewise(d3.interpolateLab, [neutral, cssVar('--pos'), cssVar('--pos-deep')]);
+      const color = d3.scaleDiverging(t => t < 0.5 ? left(t * 2) : right((t - 0.5) * 2)).domain([-30, 0, 30]).clamp(true);
+      svg.append('g').selectAll('path').data(leas).join('path').attr('d', path).attr('fill', f => cumBy.has(f.properties.id) ? color(cumBy.get(f.properties.id)) : 'url(#hatch)').attr('stroke', cssVar('--surface')).attr('stroke-width', 0.6)
+        .on('pointerenter', (ev, f) => { const id = f.properties.id, s = leaE(id); showTip([el('div', 't', DATA.leas[id].name), row('Elementary change since ' + sy(BASE), cumBy.has(id) ? signed(cumBy.get(id)) + '%' : 'no E schools'), row('Elementary ADM ' + sy(Y[last]), fmt(s[last])), row('Elementary ADM ' + sy(BASE), fmt(s[bi]))], ev); }).on('pointermove', moveTip).on('pointerleave', hideTip);
+      const cobj = { type: 'GeometryCollection', geometries: topo.objects.data.geometries.filter(g => g.properties.layer === 'county') };
+      svg.append('path').attr('d', path(topojson.mesh(topo, cobj, (a, b) => a !== b))).attr('fill', 'none').attr('stroke', cssVar('--axis')).attr('stroke-width', 0.5).attr('opacity', .6).attr('pointer-events', 'none');
+      svg.append('path').attr('d', path(topojson.mesh(topo, cobj, (a, b) => a === b))).attr('fill', 'none').attr('stroke', cssVar('--axis')).attr('stroke-width', 0.8).attr('pointer-events', 'none');
+      const tri = leas.filter(f => ['681LEA', '680LEA', '320LEA', '920LEA', '190LEA'].includes(f.properties.id));
+      svg.append('path').attr('d', path({ type: 'FeatureCollection', features: tri })).attr('fill', 'none').attr('stroke', cssVar('--ink')).attr('stroke-width', 1.4).attr('pointer-events', 'none');
+      const chccsF = leas.find(f => f.properties.id === '681LEA'), c = path.centroid(chccsF);
+      svg.append('line').attr('x1', c[0]).attr('y1', c[1]).attr('x2', c[0] - 40).attr('y2', c[1] - 60).attr('stroke', cssVar('--ink')).attr('pointer-events', 'none');
+      svg.append('text').attr('class', 'lbl').attr('x', c[0] - 44).attr('y', c[1] - 64).attr('text-anchor', 'end').text('CHCCS ' + signed(cCum, 0) + '%');
+      const lg = document.getElementById('leg2b'); const stops = d3.range(0, 1.0001, 0.1).map(t => color(-30 + t * 60)); const bar = el('span', 'bar'); bar.style.background = 'linear-gradient(90deg,' + stops.join(',') + ')';
+      lg.append(el('span', '', '≤ −30%'), bar, el('span', '', '≥ +30%')); const hs = el('span'); const sw = el('i'); sw.style.cssText = 'width:16px;height:10px;background:repeating-linear-gradient(45deg, var(--axis) 0 1px, var(--neutral) 1px 5px);border:1px solid var(--border)'; hs.append(sw, document.createTextNode('no elementary schools (K-8 only)')); lg.append(hs);
+    }
+    // 2c: strip
+    { const svg = d3.select('#c2c'), W = 1200, H = 240; svg.selectAll('*').remove();
+      const x = d3.scaleLinear().domain([Math.min(-45, d3.min(allCum, d => d.v)), Math.max(30, d3.max(allCum, d => d.v))]).nice().range([50, W - 50]);
+      const bins = d3.bin().domain(x.domain()).thresholds(80).value(d => d.v)(allCum), r = 5, baseY = H - 34;
+      svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (baseY + 8) + ')').call(d3.axisBottom(x).ticks(12).tickFormat(v => signed(v, 0) + '%').tickSize(4));
+      const neutral = cssVar('--neutral'), left = d3.piecewise(d3.interpolateLab, [cssVar('--neg-deep'), cssVar('--neg'), neutral]), right = d3.piecewise(d3.interpolateLab, [neutral, cssVar('--pos'), cssVar('--pos-deep')]);
+      const color = d3.scaleDiverging(t => t < 0.5 ? left(t * 2) : right((t - 0.5) * 2)).domain([-30, 0, 30]).clamp(true);
+      const dots = []; for (const b of bins) { const cx = x((b.x0 + b.x1) / 2); b.sort((a, c) => a.v - c.v).forEach((d, k) => dots.push({ ...d, cx, cy: baseY - k * (r * 2 + 1) })); }
+      svg.append('line').attr('x1', x(median)).attr('x2', x(median)).attr('y1', 10).attr('y2', baseY + 6).attr('stroke', cssVar('--ink'));
+      svg.append('text').attr('class', 'ann').attr('x', x(median) + 6).attr('y', 18).text('median ' + signed(median) + '%');
+      svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', baseY - 50).attr('y2', baseY + 6).attr('stroke', cssVar('--axis'));
+      svg.append('g').selectAll('circle').data(dots.filter(d => d.code !== '681LEA')).join('circle').attr('cx', d => d.cx).attr('cy', d => d.cy).attr('r', r).attr('fill', d => color(d.v)).attr('stroke', cssVar('--surface'))
+        .on('pointerenter', (ev, d) => showTip([el('div', 't', d.name), row('Elementary change since ' + sy(BASE), signed(d.v) + '%')], ev)).on('pointermove', moveTip).on('pointerleave', hideTip);
+      const me = dots.find(d => d.code === '681LEA');
+      svg.append('circle').attr('cx', me.cx).attr('cy', me.cy).attr('r', r + 2).attr('fill', cssVar('--s1')).attr('stroke', cssVar('--ink')).attr('stroke-width', 2);
+      svg.append('line').attr('x1', me.cx).attr('x2', me.cx).attr('y1', me.cy - r - 4).attr('y2', 24).attr('stroke', cssVar('--muted'));
+      svg.append('text').attr('class', 'lbl').attr('x', me.cx - 8).attr('y', 18).attr('text-anchor', 'end').text('CHCCS ' + signed(cCum) + '% · rank ' + rank + ' of ' + allCum.length);
+    }
+    const eastern = allCum.slice().sort((a, b) => a.v - b.v).slice(0, 5).map(d => d.name.replace(' County Schools', '').replace(' Public Schools', '').replace(' Schools', '')).join(', ');
+    const pts = [
+      '<b>This is a statewide story.</b> ' + (allCum.length - growing) + ' of ' + allCum.length + ' districts with elementary schools have fewer elementary students than in ' + sy(BASE) + '. The steepest declines are rural and eastern (' + eastern + ').',
+      '<b>CHCCS is on the steep side of normal.</b> Its ' + signed(cCum, 1) + '% is worse than the median district (' + signed(median, 1) + '%) and worse than Wake, Chatham and Orange County Schools, but far from the extremes.',
+      '<b>Growth is in the exurbs.</b> The districts that grew ring Charlotte and Raleigh (Cabarrus, Union, Johnston, Brunswick). Wake itself is roughly flat.',
+      '<b>Charters took part of the elementary market.</b> Elementary and K-8 charter enrollment tripled statewide since ' + sy(BASE) + ' (' + fmt(chE[bi]) + ' to ' + fmt(chE[last]) + '); in Orange County it went from ' + fmt(DATA.counties['37135'].charter[bi]) + ' to ' + fmt(DATA.counties['37135'].charter[last]) + ' students of all grades.',
+    ];
+    const ul = document.querySelector('#pts2 ul'); for (const p of pts) { const li = el('li'); li.innerHTML = p; ul.append(li); }
+  })();
+
+  // ============================================================= CHAPTER 3
+  (function ch3() {
+    const kids = ages.age5_9, u5 = ages.under5;
+    const pop517 = DATA2.population.leas['681LEA'].age517, lastP = lastOf(pop517);          // 2023-24: latest Census estimate, aligned as in the notebook
+    const kidsCum = pct(kids[lastP], kids[bi]), elemCum = pct(orangeE[lastP], orangeE[bi]), gap = elemCum - kidsCum;
+    const kidsPkDrop = pct(kids[lastP], kids[kidsPk]);
+    const c517 = pct(pop517[lastP], pop517[bi]), cAll = pct(chccsAll[lastP], chccsAll[bi]);
+    const oc = '37135', np = DATA2.nonpublic[oc], npy = DATA2.npYears.indexOf(2025), npb = DATA2.npYears.indexOf(BASE);
+    const totPop = DATA2.population.leas['681LEA'].total, cTot = pct(totPop[lastP], totPop[bi]), cElem = pct(chccsE[lastP], chccsE[bi]);
+    const window3 = sy(BASE) + ' to ' + sy(Y[lastP]);
+    document.getElementById('lede3').textContent = 'The CHCCS district itself is not shrinking: the Census estimates ' + fmt(totPop[lastP]) + ' residents in ' + sy(Y[lastP]) + ', up ' + signed(cTot, 1) + '% since ' + sy(BASE) + '. Children are a different story. Over the same years residents aged 5 to 17 are down ' + signed(c517, 1) + '%, K-12 enrollment is down ' + signed(cAll, 1) + '%, and elementary enrollment is down ' + signed(cElem, 1) + '%. Fewer children explains part of the elementary decline; the rest is families choosing something other than a CHCCS elementary school. (Census estimates run through ' + sy(Y[lastP]) + '; the enrollment lines on the chart continue one more year.)';
+    const tiles = [
+      { v: signed(cTot) + '%', l: 'CHCCS district residents, all ages, ' + window3 + ' (Census SAIPE)', cls: 'pos' },
+      { v: signed(c517) + '%', l: 'CHCCS district residents aged 5 to 17, ' + window3, cls: 'neg' },
+      { v: signed(cAll) + '%', l: 'CHCCS K-12 enrollment (ADM), ' + window3 + ' (' + signed(pct(chccsAll[last], chccsAll[bi]), 1) + '% through ' + sy(Y[last]) + ')', cls: 'neg' },
+      { v: signed(cElem) + '%', l: 'CHCCS elementary-school enrollment, ' + window3 + ' (' + signed(pct(chccsE[last], chccsE[bi]), 1) + '% through ' + sy(Y[last]) + ')', cls: 'neg' },
+    ];
+    const th = document.getElementById('tiles3'); for (const t of tiles) { const k = el('div', 'tile'); k.append(el('div', 'v' + (t.cls ? ' ' + t.cls : ''), String(t.v)), el('div', 'l', t.l)); th.append(k); }
+    // 3z: the central figure, four lines as percent change since the base year
+    { const svg = d3.select('#c3z'), W = 1200, H = 460, M = { t: 30, r: 260, b: 40, l: 60 };
+      const ser = [
+        { name: 'Total population in district', vals: chg(totPop), color: cssVar('--ink'), w: 2.5 },
+        { name: 'School-age population (5-17)', vals: chg(pop517), color: cssVar('--s2'), w: 2.5 },
+        { name: 'K-12 enrollment (ADM)', vals: chg(chccsAll), color: cssVar('--s3'), w: 2.5 },
+        { name: 'Elementary enrollment', vals: chg(chccsE), color: cssVar('--s1'), w: 4 },
+      ];
+      const allv = ser.flatMap(s => s.vals.slice(bi)).filter(isNum), ext = Math.max(Math.abs(d3.min(allv)), Math.abs(d3.max(allv))) + 2;
+      const x = d3.scaleLinear().domain([BASE, Y[last]]).range([M.l, W - M.r]), y = d3.scaleLinear().domain([-ext, ext]).nice().range([H - M.b, M.t]);
+      frame(svg, W, H, M, x, y, { xTicks: 11, yTicks: 8, yFmt: pctFmt });
+      covidBand(svg, x, M, H, true);
+      svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', cssVar('--ink')).attr('stroke-width', 1.2).attr('opacity', .6);
+      svg.append('text').attr('class', 'ann').attr('x', M.l + 6).attr('y', y(0) - 6).text(sy(BASE) + ' level');
+      const line = d3.line().x((d, i) => x(Y[i])).y(d => y(d)).defined((d, i) => Y[i] >= BASE && isNum(d));
+      for (const s of ser) {
+        svg.append('path').attr('d', line(s.vals)).attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', s.w).attr('stroke-linejoin', 'round');
+        svg.append('g').selectAll('circle').data(s.vals.map((v, i) => [i, v]).filter(d => Y[d[0]] >= BASE && isNum(d[1]))).join('circle').attr('cx', d => x(Y[d[0]])).attr('cy', d => y(d[1])).attr('r', 4).attr('fill', s.color).attr('stroke', cssVar('--surface')).attr('stroke-width', 1.5);
+      }
+      endLabels(svg, endItems(ser, s => s.name.replace('Total population in district', 'All residents').replace('School-age population (5-17)', 'Residents 5-17').replace('K-12 enrollment (ADM)', 'K-12 enrollment'), pctFmt), x, y, x(Y[last]));
+      svg.append('text').attr('class', 'ann').attr('x', M.l).attr('y', 16).text('Percent change since ' + sy(BASE) + ' · Chapel Hill-Carrboro City Schools district');
+      hoverYears(svg, x, M, W, H, ser.map(s => ({ name: s.name, vals: s.vals, fmt: v => isNum(v) ? signed(v) + '%' : 'no estimate yet' })), i => [row('Residents', isNum(totPop[i]) ? fmt(totPop[i]) : 'no estimate yet'), row('Residents 5-17', isNum(pop517[i]) ? fmt(pop517[i]) : 'no estimate yet'), row('K-12 ADM', fmt(chccsAll[i])), row('Elementary ADM', fmt(chccsE[i]))]);
+      const lg = document.getElementById('leg3z'); for (const s of ser) { const sp = el('span'); const i = el('i'); i.style.background = s.color; sp.append(i, document.createTextNode(s.name)); lg.append(sp); }
+    }
+    // 3a: kids vs enrollment, Orange County
+    { const svg = d3.select('#c3a'), W = 620, H = 380, M = { t: 28, r: 200, b: 36, l: 44 };
+      const ser = [
+        { name: 'Children aged 5 to 9', vals: chg(kids), color: cssVar('--ink'), w: 3 },
+        { name: 'Elementary ADM (both districts)', vals: chg(orangeE), color: cssVar('--s1'), w: 3 },
+        { name: 'Children under 5', vals: chg(u5), color: cssVar('--muted'), w: 2, dash: true },
+      ];
+      const x = d3.scaleLinear().domain([BASE, Y[last]]).range([M.l, W - M.r]), allv = ser.flatMap(s => s.vals.slice(bi)).filter(isNum);
+      const y = d3.scaleLinear().domain([d3.min(allv) - 2, Math.max(d3.max(allv), 0) + 2]).nice().range([H - M.b, M.t]);
+      frame(svg, W, H, M, x, y, { xTicks: 6, yFmt: pctFmt });
+      covidBand(svg, x, M, H, false);
+      svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', cssVar('--ink')).attr('opacity', .5);
+      const line = d3.line().x((d, i) => x(Y[i])).y(d => y(d)).defined((d, i) => Y[i] >= BASE && isNum(d));
+      for (const s of ser) svg.append('path').attr('d', line(s.vals)).attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', s.w).attr('stroke-dasharray', s.dash ? '6 5' : null).attr('stroke-linejoin', 'round');
+      endLabels(svg, endItems(ser, s => s.name.replace('Elementary ADM (both districts)', 'Elementary ADM').replace('Children aged 5 to 9', 'Kids 5-9').replace('Children under 5', 'Under 5'), pctFmt), x, y, x(Y[last]));
+      svg.append('text').attr('class', 'ann').attr('x', M.l).attr('y', 16).text('Change since ' + sy(BASE) + ' · Orange County');
+      hoverYears(svg, x, M, W, H, [{ name: 'Children 5-9', vals: kids, fmt: v => isNum(v) ? fmt(v) : 'no estimate yet' }, { name: 'Elementary ADM (CHCCS + OCS)', vals: orangeE }, { name: 'Children under 5', vals: u5, fmt: v => isNum(v) ? fmt(v) : 'no estimate yet' }]);
+      const lg = document.getElementById('leg3a'); for (const s of ser) { const sp = el('span'); const i = el('i' + (s.dash ? '' : '')); if (s.dash) { i.className = 'dash'; i.style.borderColor = s.color; } else i.style.background = s.color; sp.append(i, document.createTextNode(s.name)); lg.append(sp); }
+    }
+    // 3b: scatter of all districts
+    { const svg = d3.select('#c3b'), W = 620, H = 380, M = { t: 24, r: 20, b: 40, l: 50 };
+      const pts = Object.keys(DATA.leas).map(code => { const p = DATA2.population.leas[code].age517, a = DATA.leas[code].adm; return { code, name: DATA.leas[code].name, dp: pct(p[lastP], p[bi]), da: pct(a[lastP], a[bi]), size: a[lastP] }; });
+      const ext = 40;
+      const x = d3.scaleLinear().domain([-ext, ext]).range([M.l, W - M.r]), y = d3.scaleLinear().domain([-ext, ext]).range([H - M.b, M.t]);
+      svg.append('rect').attr('x', x(0)).attr('y', y(0)).attr('width', x(ext) - x(0)).attr('height', y(-ext) - y(0)).attr('fill', cssVar('--s2')).attr('opacity', .08);
+      svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (H - M.b) + ')').call(d3.axisBottom(x).ticks(8).tickFormat(v => signed(v, 0) + '%').tickSize(-(H - M.b - M.t))).call(g => { g.select('.domain').remove(); g.selectAll('line').attr('class', 'gridline'); });
+      svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)').call(d3.axisLeft(y).ticks(8).tickFormat(v => signed(v, 0) + '%').tickSize(-(W - M.r - M.l))).call(g => { g.select('.domain').remove(); g.selectAll('line').attr('class', 'gridline'); });
+      svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', M.t).attr('y2', H - M.b).attr('stroke', cssVar('--axis'));
+      svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', cssVar('--axis'));
+      svg.append('line').attr('x1', x(-ext)).attr('x2', x(ext)).attr('y1', y(-ext)).attr('y2', y(ext)).attr('stroke', cssVar('--muted')).attr('stroke-dasharray', '3 4');
+      svg.append('text').attr('class', 'ann').attr('x', W - M.r - 4).attr('y', y(0) + 16).attr('text-anchor', 'end').attr('fill', cssVar('--s2')).attr('font-weight', 600).text('more kids, fewer students');
+      svg.append('text').attr('class', 'ann').attr('x', W - M.r - 4).attr('y', H - M.b - 8).attr('text-anchor', 'end').text('children 5-17 since ' + sy(BASE) + ' →');
+      svg.append('text').attr('class', 'ann').attr('x', M.l + 6).attr('y', M.t + 12).text('↑ public enrollment since ' + sy(BASE));
+      const r = d3.scaleSqrt().domain([0, d3.max(pts, d => d.size)]).range([3, 15]);
+      const focus = ['681LEA', '680LEA', '320LEA', '920LEA', '190LEA'];
+      const g = svg.append('g');
+      g.selectAll('circle.o').data(pts.filter(d => !focus.includes(d.code))).join('circle').attr('cx', d => x(Math.max(-ext, Math.min(ext, d.dp)))).attr('cy', d => y(Math.max(-ext, Math.min(ext, d.da)))).attr('r', d => r(d.size)).attr('fill', cssVar('--muted')).attr('opacity', .45).attr('stroke', cssVar('--surface'))
+        .on('pointerenter', (ev, d) => showTip([el('div', 't', d.name), row('Children 5-17', signed(d.dp) + '%'), row('Public ADM', signed(d.da) + '%'), row('Gap', signed(d.da - d.dp) + ' pts')], ev)).on('pointermove', moveTip).on('pointerleave', hideTip);
+      const cols = { '681LEA': '--s1', '680LEA': '--s2', '320LEA': '--s3', '920LEA': '--s4', '190LEA': '--s5' };
+      const fp = pts.filter(d => focus.includes(d.code));
+      g.selectAll('circle.f').data(fp).join('circle').attr('cx', d => x(d.dp)).attr('cy', d => y(d.da)).attr('r', d => r(d.size) + 1).attr('fill', d => cssVar(cols[d.code])).attr('stroke', cssVar('--ink')).attr('stroke-width', 1.5)
+        .on('pointerenter', (ev, d) => showTip([el('div', 't', d.name), row('Children 5-17', signed(d.dp) + '%'), row('Public ADM', signed(d.da) + '%'), row('Gap', signed(d.da - d.dp) + ' pts')], ev)).on('pointermove', moveTip).on('pointerleave', hideTip);
+      const labs = fp.map(d => ({ ...d, lx: x(d.dp) + r(d.size) + 5, ly: y(d.da) })).sort((a, b) => a.ly - b.ly);
+      for (let k = 1; k < labs.length; k++) for (let j = 0; j < k; j++) if (Math.abs(labs[k].lx - labs[j].lx) < 80 && Math.abs(labs[k].ly - labs[j].ly) < 15) labs[k].ly = labs[j].ly + 15;
+      g.selectAll('text.l').data(labs).join('text').attr('class', 'lbl').attr('x', d => d.lx).attr('y', d => d.ly).attr('dy', '0.35em').text(d => d.name.replace('Chapel Hill-Carrboro City Schools', 'CHCCS').replace(' County Schools', '').replace(' Public Schools', ''));
+    }
+    // 3c: Orange County by sector, 2014-15 vs 2024-25
+    { const svg = d3.select('#c3c'), W = 760, H = 300, M = { t: 30, r: 20, b: 40, l: 60 };
+      const c = DATA.counties[oc];
+      const cats = [
+        { name: 'District schools (both LEAs)', a: c.lea[bi], b: c.lea[last] },
+        { name: 'Charter schools', a: c.charter[bi], b: c.charter[last] },
+        { name: 'Private schools', a: np.private[npb], b: np.private[npy] },
+        { name: 'Home schools (est.)', a: np.home[npb], b: np.home[npy] },
+      ];
+      const x0 = d3.scaleBand().domain(cats.map(d => d.name)).range([M.l, W - M.r]).paddingInner(0.3), x1 = d3.scaleBand().domain(['a', 'b']).range([0, x0.bandwidth()]).paddingInner(0.08);
+      const y = d3.scaleSymlog ? d3.scaleLinear().domain([0, d3.max(cats, d => Math.max(d.a, d.b)) * 1.12]).nice().range([H - M.b, M.t]) : null;
+      svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)').call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('~s')).tickSize(-(W - M.r - M.l))).call(g => { g.select('.domain').remove(); g.selectAll('line').attr('class', 'gridline'); });
+      svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (H - M.b) + ')').call(d3.axisBottom(x0).tickSize(0)).call(g => { g.select('.domain').remove(); g.selectAll('text').attr('font-size', 13); });
+      const gg = svg.append('g').selectAll('g').data(cats).join('g').attr('transform', d => 'translate(' + x0(d.name) + ',0)');
+      gg.append('rect').attr('x', x1('a')).attr('width', x1.bandwidth()).attr('y', d => y(d.a)).attr('height', d => y(0) - y(d.a)).attr('fill', cssVar('--muted')).attr('rx', 3);
+      gg.append('rect').attr('x', x1('b')).attr('width', x1.bandwidth()).attr('y', d => y(d.b)).attr('height', d => y(0) - y(d.b)).attr('fill', cssVar('--s1')).attr('rx', 3);
+      gg.append('text').attr('class', 'lbl muted').attr('x', x1('a') + x1.bandwidth() / 2).attr('y', d => y(d.a) - 6).attr('text-anchor', 'middle').text(d => fmt(d.a));
+      gg.append('text').attr('class', 'lbl').attr('x', x1('b') + x1.bandwidth() / 2).attr('y', d => y(d.b) - 6).attr('text-anchor', 'middle').text(d => fmt(d.b) + ' (' + signed(pct(d.b, d.a), 0) + '%)');
+      const lg = svg.append('g').attr('transform', 'translate(' + (M.l + 4) + ',12)');
+      [[sy(BASE), '--muted'], [sy(Y[last]), '--s1']].forEach((d, i) => { lg.append('rect').attr('x', i * 110).attr('y', 0).attr('width', 12).attr('height', 12).attr('rx', 2).attr('fill', cssVar(d[1])); lg.append('text').attr('x', i * 110 + 17).attr('y', 10).attr('font-size', 13).attr('fill', cssVar('--ink-2')).text(d[0]); });
+    }
+    // 3d: text panel
+    { const host = document.getElementById('c3d');
+      const ps = [
+        'Births and the under-5 population in Orange County have been falling since about ' + sy(2011) + ', so the shrinking elementary population is real and was visible years before enrollment fell.',
+        'But children left faster than enrollment can explain: from ' + window3 + ' the county lost ' + signed(kidsCum, 1) + '% of its 5-to-9-year-olds while its elementary schools lost ' + signed(elemCum, 1) + '% of their students. For CHCCS specifically, residents aged 5 to 17 fell ' + signed(c517, 1) + '% while all-grade enrollment fell ' + signed(cAll, 1) + '%.',
+        'The extra loss went somewhere: charter enrollment in Orange County more than doubled, private and home school enrollment grew modestly, and ' + fmt(DATA2.vouchers.byCounty[oc]) + ' Orange County students used Opportunity Scholarships in ' + sy(2025) + ', the first year they were open to every family.',
+        'What this cannot show: which individual families left and why, and whether the housing market kept young families out of the district in the first place. Those need different data.',
+      ];
+      for (const p of ps) host.append(el('p', '', p));
+    }
+    const pts = [
+      '<b>The district is growing; its children are not.</b> CHCCS residents of all ages are up ' + signed(cTot, 1) + '% since ' + sy(BASE) + ', while residents aged 5 to 17 are down ' + signed(c517, 1) + '%. Orange County has ' + fmt(kids[kidsPk] - kids[last]) + ' fewer children aged 5 to 9 than at its ' + sy(Y[kidsPk]) + ' peak, and the under-5 count says the pipeline keeps shrinking.',
+      '<b>It is not the whole story.</b> Elementary enrollment fell ' + signed(gap, 1) + ' points faster than the elementary-age population from ' + window3 + '. On the scatter, CHCCS sits below the diagonal with most of the state: enrollment outrunning demographics is the norm, not a CHCCS quirk.',
+      '<b>Where the rest went.</b> Orange County charter students: ' + fmt(DATA.counties[oc].charter[bi]) + ' to ' + fmt(DATA.counties[oc].charter[last]) + '. Private: ' + fmt(np.private[npb]) + ' to ' + fmt(np.private[npy]) + '. Home school: ' + fmt(np.home[npb]) + ' to ' + fmt(np.home[npy]) + '. Vouchers: ' + fmt(DATA2.vouchers.byCounty[oc]) + ' in ' + sy(2025) + '.',
+      '<b>The honest caveat.</b> Census estimates end at July 2024, which pairs with 2023-24 here (the same pairing the notebook uses), so the population comparisons stop one year before enrollment. Census ages are county-wide, so CHCCS and Orange County Schools share the demographic picture, and the 2020 census seam nudges the population lines.',
+    ];
+    const ul = document.querySelector('#pts3 ul'); for (const p of pts) { const li = el('li'); li.innerHTML = p; ul.append(li); }
+  })();
+
+  // ------------------------------------------------------------- nav, theme
+  const chapters = ['ch1', 'ch2', 'ch3'];
+  const links = Array.from(document.querySelectorAll('.nav a'));
+  function current() { let best = 'ch1'; for (const id of chapters) { const r = document.getElementById(id).getBoundingClientRect(); if (r.top <= 120) best = id; } return best; }
+  function syncNav() { const c = current(); links.forEach(a => a.classList.toggle('active', a.dataset.ch === c)); }
+  addEventListener('scroll', syncNav, { passive: true }); syncNav();
+  document.addEventListener('keydown', ev => {
+    if (ev.target.matches('input, select, textarea, button')) return;
+    const i = chapters.indexOf(current());
+    if (ev.key === 'ArrowRight' || ev.key === 'PageDown') { ev.preventDefault(); document.getElementById(chapters[Math.min(chapters.length - 1, i + 1)]).scrollIntoView({ behavior: 'smooth' }); }
+    if (ev.key === 'ArrowLeft' || ev.key === 'PageUp') { ev.preventDefault(); document.getElementById(chapters[Math.max(0, i - 1)]).scrollIntoView({ behavior: 'smooth' }); }
+    if (['1', '2', '3'].includes(ev.key)) document.getElementById('ch' + ev.key).scrollIntoView({ behavior: 'smooth' });
+  });
+  // charts read colour tokens at draw time, so a theme change simply redraws the page
+  document.getElementById('themeBtn').addEventListener('click', () => { const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; location.hash = dark ? '#light' : '#dark'; location.reload(); });
+})();
+</script>
+</body>
+</html>

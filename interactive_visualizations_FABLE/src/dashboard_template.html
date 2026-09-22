@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NC Enrollment Shift</title>
+<meta name="description" content="Interactive dashboard of enrollment change across North Carolina's 115 school districts and 100 counties, 2005-06 through 2024-25, with charter growth and school-choice policy events marked.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --neutral: #f0efec;
+    --pos: #2a78d6;           /* growth pole  (blue) */
+    --pos-deep: #0d366b;
+    --neg: #e34948;           /* decline pole (red)  */
+    --neg-deep: #7a1717;
+    --seq-lo: #cde2fb;        /* sequential blue ramp ends */
+    --seq-hi: #0d366b;
+    --seq2-lo: #fde3d6;       /* sequential orange ramp ends */
+    --seq2-hi: #7a2e0e;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+    --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --neutral: #383835; --pos: #3987e5; --pos-deep: #9ec5f4; --neg: #e66767; --neg-deep: #ffb3b3;
+      --seq-lo: #1c3552; --seq-hi: #9ec5f4; --seq2-lo: #4a2a1a; --seq2-hi: #f5b48f;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+      --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --neutral: #383835; --pos: #3987e5; --pos-deep: #9ec5f4; --neg: #e66767; --neg-deep: #ffb3b3;
+    --seq-lo: #1c3552; --seq-hi: #9ec5f4; --seq2-lo: #4a2a1a; --seq2-hi: #f5b48f;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--page); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--pos); }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 0 16px 48px; }
+
+  /* ---------- header ---------- */
+  header.top { padding: 28px 0 12px; display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-end; justify-content: space-between; }
+  header.top h1 { font-size: 26px; line-height: 1.15; margin: 0 0 6px; font-weight: 650; letter-spacing: -0.01em; }
+  header.top p.sub { margin: 0; color: var(--ink-2); max-width: 760px; }
+  .theme-btn { border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 12px; cursor: pointer; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 12px 0 16px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; box-shadow: var(--shadow); }
+  .kpi .v { font-size: 26px; font-weight: 650; line-height: 1.1; letter-spacing: -0.01em; }
+  .kpi .v.neg { color: var(--neg); } .kpi .v.pos { color: var(--pos); }
+  .kpi .l { color: var(--ink-2); font-size: 12px; margin-top: 4px; }
+
+  /* ---------- controls ---------- */
+  .controls {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--page) 88%, transparent);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 0 8px; margin-bottom: 14px;
+  }
+  .ctl-row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl > label, .ctl > span.lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); white-space: nowrap; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { border: 0; background: transparent; color: var(--ink-2); padding: 6px 11px; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+  select { font: inherit; font-size: 13px; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); }
+  .hidden { display: none !important; }
+
+  .time-row { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; margin-top: 8px; }
+  .play { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink); color: var(--surface); font-size: 15px; cursor: pointer; display: grid; place-items: center; }
+  .play:focus-visible { outline: 2px solid var(--pos); outline-offset: 2px; }
+  .year-big { font-size: 22px; font-weight: 650; min-width: 92px; text-align: right; font-variant-numeric: tabular-nums; }
+  .slider-wrap { position: relative; padding: 0 6px 30px; }
+  input[type=range] { width: 100%; margin: 0; accent-color: var(--ink); }
+  .ev-ticks { position: absolute; left: 6px; right: 6px; top: 22px; height: 26px; pointer-events: none; }
+  .ev-tick { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; }
+  .ev-tick i { display: block; width: 1px; height: 8px; background: var(--muted); }
+  .ev-badge { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--ink); color: var(--ink); font-size: 10px; font-weight: 700; font-style: normal; }
+  .ev-tick .ev-badge { cursor: help; }
+  .ev-tick .ev-badge.beyond { border-style: dashed; color: var(--muted); border-color: var(--muted); }
+
+  /* ---------- layout ---------- */
+  .grid { display: grid; gap: 14px; }
+  .maps { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .two { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  @media (max-width: 900px) { .maps, .two { grid-template-columns: 1fr; } .time-row { grid-template-columns: auto 1fr; } .year-big { grid-column: 1 / -1; text-align: left; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px 12px; box-shadow: var(--shadow); min-width: 0; }
+  .card h2 { font-size: 15px; font-weight: 650; margin: 0 0 2px; }
+  .card p.hint { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+  .card svg { display: block; width: 100%; height: auto; }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .card-head .tools { display: flex; gap: 8px; align-items: center; }
+  .legend { display: flex; align-items: center; gap: 10px; margin: 6px 0 0; font-size: 11px; color: var(--ink-2); flex-wrap: wrap; }
+  .legend .bar { flex: 0 0 220px; height: 10px; border-radius: 5px; border: 1px solid var(--border); }
+  .legend .swatch { display: inline-block; width: 14px; height: 10px; border: 1px solid var(--border); vertical-align: -1px; margin-right: 4px; border-radius: 2px; }
+  .legend .bar-ticks { display: flex; justify-content: space-between; width: 220px; font-variant-numeric: tabular-nums; }
+
+  .map-svg path.unit { stroke: var(--surface); stroke-width: 0.6; cursor: pointer; transition: fill .35s ease; }
+  @media (prefers-reduced-motion: reduce) { .map-svg path.unit { transition: none; } }
+  .map-svg path.unit:hover { stroke: var(--ink); stroke-width: 1.2; }
+  .map-svg path.unit.selected { stroke: var(--ink); stroke-width: 1.6; }
+  .map-svg path.mesh { fill: none; stroke: var(--surface); stroke-width: 0.5; pointer-events: none; }
+  .map-svg path.outline { fill: none; stroke: var(--axis); stroke-width: 0.8; pointer-events: none; }
+  .map-svg path.focus-ring { fill: none; stroke: var(--ink); stroke-width: 1.4; pointer-events: none; }
+  .map-svg text.lbl { font-size: 10px; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; font-weight: 600; }
+  .map-svg text.lbl.small { font-size: 9px; font-weight: 500; }
+  .map-svg rect.frame { fill: none; stroke: var(--axis); }
+
+  /* strip / chart chrome */
+  .axis text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .axis line, .axis path { stroke: var(--axis); }
+  .axis .domain { stroke: var(--axis); }
+  .gridline { stroke: var(--grid); }
+  .ev-line { stroke: var(--axis); stroke-width: 1; }
+  .ev-line.beyond { stroke-dasharray: 2 3; }
+  .cursor-line { stroke: var(--ink); stroke-width: 1; opacity: .55; }
+  .series-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .series-line.ref { stroke: var(--muted); stroke-width: 1.5; }
+  .series-label { font-size: 11px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+  .end-dot { stroke: var(--surface); stroke-width: 2; }
+  svg .ev-badge-g circle { fill: var(--surface); stroke: var(--ink); stroke-width: 1.3; }
+  svg .ev-badge-g.beyond circle { stroke: var(--muted); stroke-dasharray: 2 2; }
+  svg .ev-badge-g text { font-size: 10px; font-weight: 700; fill: var(--ink); text-anchor: middle; dominant-baseline: central; }
+  svg .ev-badge-g.beyond text { fill: var(--muted); }
+
+  .cards5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .mini { border: 1px solid var(--border); border-radius: 10px; padding: 10px 10px 6px; cursor: pointer; background: var(--surface); position: relative; }
+  .mini:hover { border-color: var(--ink-2); }
+  .mini .n { font-size: 12px; font-weight: 650; line-height: 1.2; min-height: 30px; padding-right: 16px; }
+  .mini .v { font-size: 18px; font-weight: 650; margin-top: 2px; }
+  .mini .d { font-size: 11px; color: var(--ink-2); }
+  .mini .d b.neg { color: var(--neg); } .mini .d b.pos { color: var(--pos); }
+  .mini .dot { position: absolute; top: 10px; right: 10px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--border); }
+  .mini svg { width: 100%; height: 48px; margin-top: 4px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 999px; padding: 3px 8px 3px 6px; font-size: 12px; background: var(--surface); }
+  .chip i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  .chip button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 0 2px; line-height: 1; }
+  .chip button:hover { color: var(--neg); }
+  .chip.ref i { background: var(--muted); }
+
+  .heat-wrap { overflow-x: auto; }
+  .heat rect.cell { cursor: pointer; }
+  .heat rect.cell:hover { stroke: var(--ink); stroke-width: 1; }
+  .heat text.row { font-size: 10px; fill: var(--ink-2); cursor: pointer; }
+  .heat text.row.pinned { font-weight: 700; fill: var(--ink); }
+  .heat text.row.sel { fill: var(--ink); font-weight: 700; }
+  .heat text.col { font-size: 10px; fill: var(--muted); text-anchor: middle; }
+  .heat line.divider { stroke: var(--axis); }
+
+  .tt { position: fixed; z-index: 50; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.12); max-width: 280px; display: none; }
+  .tt .t { font-weight: 650; margin-bottom: 2px; }
+  .tt .big { font-size: 16px; font-weight: 700; }
+  .tt .big.neg { color: var(--neg); } .tt .big.pos { color: var(--pos); }
+  .tt .row { display: flex; justify-content: space-between; gap: 14px; }
+  .tt .row span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .tt .k { color: var(--ink-2); }
+  .tt svg { display: block; margin-top: 6px; }
+  .tt .sub { color: var(--muted); font-size: 11px; margin-top: 3px; }
+
+  details.tbl { margin-top: 14px; }
+  details.tbl summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
+  table.data { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  table.data th, table.data td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--grid); }
+  table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.data tr.hl td { font-weight: 700; }
+
+  .notes { columns: 2; column-gap: 28px; font-size: 13px; color: var(--ink-2); }
+  @media (max-width: 800px) { .notes { columns: 1; } }
+  .notes h3 { font-size: 13px; color: var(--ink); margin: 0 0 4px; break-after: avoid; }
+  .notes p, .notes li { margin: 0 0 8px; }
+  .notes ol { padding-left: 18px; margin: 0 0 10px; }
+  .notes .blk { break-inside: avoid; margin-bottom: 14px; }
+  .events-list { list-style: none; padding: 0; margin: 0; }
+  .events-list li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; margin-bottom: 8px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; background: var(--neutral); padding: 1px 4px; border-radius: 4px; }
+  .tabbar { display: flex; gap: 6px; padding: 14px 0 0; flex-wrap: wrap; }
+  .tabbar button { border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .tabbar button b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--neutral); color: var(--ink); font-size: 11px; }
+  .tabbar button[aria-selected="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .tabbar button[aria-selected="true"] b { background: var(--surface); color: var(--ink); }
+  .page[hidden] { display: none; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+      <rect width="6" height="6" fill="var(--neutral)"></rect>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="var(--axis)" stroke-width="1"></line>
+    </pattern>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <nav class="tabbar" aria-label="Pages">
+    <button type="button" data-tab="tab0" aria-selected="false"><b>0</b>Elementary schools</button>
+    <button type="button" data-tab="tab1" aria-selected="true"><b>1</b>Where are students going?</button>
+    <button type="button" data-tab="tab2" aria-selected="false"><b>2</b>Private &amp; home schools</button>
+    <button type="button" data-tab="tab3" aria-selected="false"><b>3</b>Population vs. enrollment</button>
+    <button class="theme-btn" id="themeBtn" type="button" style="margin-left:auto">Toggle dark mode</button>
+  </nav>
+<section id="tab1" class="page">
+  <header class="top">
+    <div>
+      <h1>Where are North Carolina's students going?</h1>
+      <p class="sub">Enrollment change in every NC school district and county, 2005-06 through 2024-25, with charter growth and school-choice policy turns marked on the timeline. Built around Chapel Hill-Carrboro City Schools and its Triangle neighbors, in the context of the whole state.</p>
+    </div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="controls" id="controls">
+    <div class="ctl-row">
+      <div class="ctl"><span class="lbl">Level</span>
+        <div class="seg" id="levelSeg" role="group" aria-label="Geographic level">
+          <button type="button" data-v="lea" aria-pressed="true">Districts (LEAs)</button>
+          <button type="button" data-v="county" aria-pressed="false">Counties</button>
+        </div>
+      </div>
+      <div class="ctl" id="countScopeCtl"><span class="lbl">Count</span>
+        <div class="seg" id="scopeSeg" role="group" aria-label="Which students to count at county level">
+          <button type="button" data-v="total" aria-pressed="true">District + charter</button>
+          <button type="button" data-v="lea" aria-pressed="false">District only</button>
+        </div>
+      </div>
+      <div class="ctl"><label for="metricSel">Metric</label>
+        <select id="metricSel">
+          <option value="yoy">1-year change (%)</option>
+          <option value="avg3">3-year avg. annual change (%)</option>
+          <option value="cum" selected>Cumulative change since base year (%)</option>
+          <option value="peak">Below own peak (%)</option>
+          <option value="cshare" class="county-only">Charter share of public enrollment (%)</option>
+          <option value="cshareDelta" class="county-only">Charter share change since base (pts)</option>
+        </select>
+      </div>
+      <div class="ctl" id="baseCtl"><label for="baseSel">Base year</label>
+        <select id="baseSel"></select>
+      </div>
+    </div>
+    <div class="time-row">
+      <button class="play" id="playBtn" type="button" aria-label="Play timeline">&#9654;</button>
+      <div class="slider-wrap">
+        <input type="range" id="yearRange" min="0" max="19" step="1" value="19" aria-label="School year">
+        <div class="ev-ticks" id="evTicks"></div>
+      </div>
+      <div class="year-big" id="yearBig"></div>
+    </div>
+  </div>
+
+  <div class="grid maps">
+    <div class="card">
+      <div class="card-head">
+        <div><h2 id="mapTitle">Statewide</h2><p class="hint">Hover for detail. Click a unit to add it to the comparison chart and pin it in the heatmap. Bold outline marks the Triangle focus area.</p></div>
+      </div>
+      <svg id="mapMain" class="map-svg" viewBox="0 0 800 400" role="img" aria-labelledby="mapTitle"></svg>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 id="insetTitle">Triangle detail</h2><p class="hint" id="insetHint">Chapel Hill-Carrboro, Orange, Durham, Wake and Chatham, same colors as the state map.</p></div></div>
+      <svg id="mapInset" class="map-svg" viewBox="0 0 400 400" role="img" aria-labelledby="insetTitle"></svg>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="card-head"><div><h2 id="stripTitle">Where does each unit sit this year?</h2><p class="hint">Every unit as one dot on the metric scale for the selected year. Selected units are colored; the tick is the statewide median.</p></div></div>
+    <svg id="strip" viewBox="0 0 1200 110" role="img" aria-labelledby="stripTitle"></svg>
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head">
+        <div><h2>Enrollment over time</h2><p class="hint">Selected units, with the statewide total as the gray reference. Numbered markers are policy and pandemic events (key below).</p></div>
+        <div class="tools">
+          <div class="seg" id="lineModeSeg" role="group" aria-label="Line chart scale">
+            <button type="button" data-v="index" aria-pressed="true">Indexed to base = 100</button>
+            <button type="button" data-v="adm" aria-pressed="false">Students (ADM)</button>
+          </div>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <svg id="lineChart" viewBox="0 0 760 340" role="img" aria-label="Enrollment over time for selected units"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 id="cardsTitle">Triangle focus</h2><p class="hint">Average daily membership each year. Dot marks the peak year. Click a card to add or remove it from the comparison.</p></div></div>
+      <div class="cards5" id="cards5"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="card-head">
+      <div><h2 id="heatTitle">Every unit, every year</h2><p class="hint">One row per unit, one column per school year, colored by the selected metric. Triangle units are pinned at the top. Click a row to select it.</p></div>
+      <div class="tools">
+        <label for="sortSel" style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Sort rows</label>
+        <select id="sortSel">
+          <option value="latest">Latest value</option>
+          <option value="cum">Cumulative change since base</option>
+          <option value="size">Enrollment (largest first)</option>
+          <option value="name">Name</option>
+          <option value="county">County</option>
+        </select>
+      </div>
+    </div>
+    <div class="heat-wrap"><svg id="heat" class="heat" role="img" aria-labelledby="heatTitle"></svg></div>
+  </div>
+
+  <div class="grid two" style="margin-top:14px">
+    <div class="card">
+      <div class="card-head"><div><h2>Statewide: district vs. charter enrollment</h2><p class="hint">Average daily membership in the 115 traditional districts versus all charter schools (including statewide virtual charters).</p></div></div>
+      <svg id="stack" viewBox="0 0 760 300" role="img" aria-label="Statewide traditional district versus charter enrollment"></svg>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 id="gsTitle">How many units grew or shrank each year</h2><p class="hint">Count of units with a 1-year gain (above the line) or loss (below) in each school year.</p></div></div>
+      <svg id="growShrink" viewBox="0 0 520 300" role="img" aria-labelledby="gsTitle"></svg>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <details class="tbl" id="tableDetails">
+      <summary>Table view of the current map (level, metric, year)</summary>
+      <div id="tableHost"></div>
+    </details>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>How to read this, and where it comes from</h2>
+    <div class="notes">
+      <div class="blk">
+        <h3>Timeline events</h3>
+        <ol class="events-list" id="eventsList"></ol>
+      </div>
+      <div class="blk">
+        <h3>Metrics</h3>
+        <p><b>1-year change</b>: this year's ADM versus last year's, as a percent. Catches year-to-year swings, including the pandemic year.</p>
+        <p><b>3-year average annual change</b>: the mean of the last three 1-year changes. Smooths single-year noise so persistent trends stand out.</p>
+        <p><b>Cumulative change since base year</b>: this year's ADM versus the base year's. The long-horizon view. Units are hatched for years before the base.</p>
+        <p><b>Below own peak</b>: this year's ADM versus the unit's highest ADM in any year up to and including this one. Zero means the unit is at its all-time high; every value is zero or negative.</p>
+        <p><b>Charter share</b> (county level): charter ADM located in the county divided by district plus charter ADM. Charter students are assigned to the county where the school sits, not where they live.</p>
+      </div>
+      <div class="blk">
+        <h3>Data</h3>
+        <p>Enrollment is <b>Average Daily Membership (ADM)</b> from NC DPI's School Report Card researcher data set, table <code>rcd_adm</code> (2024-25 release), for 2005-06 through 2024-25. The year label is the school year's ending year: "2024-25" is the 2025 row. Names and counties come from table <code>rcd_location</code> in the same release. Boundaries are U.S. Census Bureau 2023 cartographic boundary files (unified school districts and counties, 1:500k), applied to all years.</p>
+        <p>The county view sums the districts in each county (Orange County is Orange County Schools plus Chapel Hill-Carrboro City Schools) and, when "District + charter" is on, adds charter schools located there. NC's two statewide virtual charters are counted in the statewide charter total only.</p>
+      </div>
+      <div class="blk">
+        <h3>Limits</h3>
+        <p>ADM is a state funding measure, not a headcount of resident children. Falling ADM can reflect fewer children, families choosing charter, private, or home schooling, or boundary changes. Private school and homeschool enrollment are on tab 2; the voucher events here mark policy timing, not measured transfers.</p>
+        <p><b>Boundary change.</b> Nash-Rocky Mount Schools was split along the county line for 2024-25 (Senate Bill 248): about 1,700 students on the Edgecombe side of Rocky Mount moved to Edgecombe County Public Schools, and the Nash district was renamed Nash County Public Schools. The 2024-25 drop for Nash (about 8%) and rise for Edgecombe (about 20%) are that transfer, not families moving. The map still draws the 2023 Census boundary, which is the pre-split shape.</p>
+        <p><b>Districts that cross county lines.</b> City districts such as Kannapolis (Cabarrus and Rowan) are counted in the county of their central office, so county totals are approximate where a district straddles a line. Three federal and tribal districts (Fort Bragg, Camp Lejeune, Cherokee Central) are not NC LEAs and are not shown, which lowers county totals in Cumberland, Onslow, Swain and Jackson. Two residential Schools for the Deaf are excluded.</p>
+        <p><b>Pre-K is not in ADM</b>, for any district or year: DPI counts K-12 membership only, and its separate pre-K table lists schools whose pre-K count exceeds their entire ADM. <b>2020-21</b> ADM was measured during remote and hybrid instruction; treat that year's one-year changes as a pandemic effect, not a trend. <b>2024-25</b>: DPI notes that the move to a new student information system may have produced higher-than-expected final ADM counts. A full list of caveats is in <code>LIMITATIONS.md</code> next to this file.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!--__TABS_HTML__-->
+</div>
+
+<div class="tt" id="tt" role="tooltip"></div>
+
+<script><!--__D3__--></script>
+<script><!--__TOPOJSON__--></script>
+<script>
+const DATA = /*__DATA__*/null;
+const DATA2 = /*__DATA2__*/null;
+window.NC_EVENTS = [
+  { n: 1, x: 2012.5, label: 'Charter cap lifted', when: 'Aug 2011', detail: 'Session Law 2011-164 (Senate Bill 8) removed the 100-school cap on charters and let existing charters grow up to 20% a year. First new schools opened for 2012-13.' },
+  { n: 2, x: 2014.5, label: 'Opportunity Scholarships created', when: 'July 2013', detail: 'The 2013 budget (Session Law 2013-360) created income-limited private school vouchers. First scholarships were awarded for 2014-15.' },
+  { n: 3, x: 2020.5, label: 'COVID-19', when: 'March 2020', detail: 'Schools closed statewide in March 2020. 2020-21 was the first full pandemic school year and the sharpest one-year statewide drop in this data.' },
+  { n: 4, x: 2024.5, label: 'Vouchers go universal', when: 'Oct 2023', detail: 'The 2023 budget (Session Law 2023-134) removed the income limit and the public-school attendance requirement, effective 2024-25. Nearly 70,000 new applications arrived; about 15,800 were funded and roughly 54,000 went on a waitlist.' },
+  { n: 5, x: 2025.5, label: 'Waitlist funded', when: 'Nov 2024', beyond: true, detail: 'House Bill 10 became law over a veto on Nov. 20, 2024, funding the waitlist. Offers went to 54,000+ students in Dec. 2024, so the effect lands mostly in 2025-26, past the end of the ADM data.' },
+];
+</script>
+<script>
+(function () {
+  'use strict';
+  // =====================================================================
+  // Constants and state
+  // =====================================================================
+  const YEARS = DATA.years, NY = YEARS.length;
+  const CHCCS = '681LEA';
+  const TRIANGLE_LEA = ['681LEA', '680LEA', '320LEA', '920LEA', '190LEA'];
+  const TRIANGLE_COUNTY = ['37135', '37063', '37183', '37037'];
+  const ORANGE = '37135';
+  const EVENTS = window.NC_EVENTS;
+  const METRIC_META = {
+    yoy:         { label: '1-year change', unit: '%', kind: 'div', span: 6,  fmt: v => signed(v, 1) + '%' },
+    avg3:        { label: '3-yr avg. annual change', unit: '%', kind: 'div', span: 4, fmt: v => signed(v, 1) + '%' },
+    cum:         { label: 'Cumulative change', unit: '%', kind: 'div', span: 25, fmt: v => signed(v, 1) + '%' },
+    peak:        { label: 'Below own peak', unit: '%', kind: 'negseq', span: 25, fmt: v => signed(v, 1) + '%' },
+    cshare:      { label: 'Charter share', unit: '%', kind: 'seq', span: 30, fmt: v => v.toFixed(1) + '%' },
+    cshareDelta: { label: 'Charter share change', unit: 'pts', kind: 'div', span: 10, fmt: v => signed(v, 1) + ' pts' },
+  };
+
+  const state = {
+    level: 'lea',            // 'lea' | 'county'
+    scope: 'total',          // county only: 'total' | 'lea'
+    metric: 'cum',
+    base: 2015,
+    yi: NY - 1,              // index into YEARS
+    lineMode: 'index',
+    sort: 'latest',
+    selected: { lea: ['681LEA'], county: ['37135'] },
+    slots: { lea: new Map([['681LEA', 1]]), county: new Map([['37135', 1]]) },
+    playing: false,
+    timer: null,
+  };
+
+  // =====================================================================
+  // Helpers
+  // =====================================================================
+  const $ = s => document.querySelector(s);
+  const fmtInt = d3.format(',');
+  function signed(v, d) { return (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(d); }
+  function sy(y) { return (y - 1) + '-' + String(y).slice(2); }           // 2025 -> "2024-25"
+  function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function mean(a) { return a.reduce((s, v) => s + v, 0) / a.length; }
+
+  // Entities for the current level
+  function ids() { return state.level === 'lea' ? Object.keys(DATA.leas) : Object.keys(DATA.counties); }
+  function nameOf(id) { return state.level === 'lea' ? DATA.leas[id].name : DATA.counties[id].name + ' County'; }
+  function countyOf(id) { return state.level === 'lea' ? DATA.leas[id].county : DATA.counties[id].name; }
+  function admSeries(id) {
+    if (state.level === 'lea') return DATA.leas[id].adm;
+    const c = DATA.counties[id];
+    return state.scope === 'total' ? c.lea.map((v, i) => v + c.charter[i]) : c.lea;
+  }
+  function focusIds() { return state.level === 'lea' ? TRIANGLE_LEA : TRIANGLE_COUNTY; }
+  function anchorId() { return state.level === 'lea' ? CHCCS : ORANGE; }
+  function selected() { return state.selected[state.level]; }
+  function slotOf(id) { return state.slots[state.level].get(id); }
+  function slotColor(slot) { return cssVar('--s' + slot); }
+  function isSelected(id) { return selected().includes(id); }
+  function toggleSelect(id) {
+    const sel = state.selected[state.level], slots = state.slots[state.level];
+    if (sel.includes(id)) {
+      if (sel.length === 1) return;
+      sel.splice(sel.indexOf(id), 1); slots.delete(id);
+    } else {
+      if (sel.length >= 8) return;
+      const used = new Set(slots.values());
+      let s = 1; while (used.has(s)) s++;
+      sel.push(id); slots.set(id, s);
+    }
+    renderAll();
+  }
+
+  // Metric series for one entity: array of NY values (null where undefined)
+  function metricSeries(id, metric) {
+    const s = admSeries(id), bi = YEARS.indexOf(state.base);
+    const out = new Array(NY).fill(null);
+    if (metric === 'yoy') {
+      for (let i = 1; i < NY; i++) out[i] = s[i - 1] > 0 ? (s[i] / s[i - 1] - 1) * 100 : null;
+    } else if (metric === 'avg3') {
+      const yoy = metricSeries(id, 'yoy');
+      for (let i = 3; i < NY; i++) out[i] = mean([yoy[i - 2], yoy[i - 1], yoy[i]]);
+    } else if (metric === 'cum') {
+      for (let i = bi; i < NY; i++) out[i] = s[bi] > 0 ? (s[i] / s[bi] - 1) * 100 : null;
+    } else if (metric === 'peak') {
+      let mx = 0;
+      for (let i = 0; i < NY; i++) { mx = Math.max(mx, s[i]); out[i] = mx > 0 ? (s[i] / mx - 1) * 100 : null; }
+    } else if (metric === 'cshare' || metric === 'cshareDelta') {
+      if (state.level !== 'county') return out;
+      const c = DATA.counties[id];
+      const share = c.lea.map((v, i) => (v + c.charter[i]) > 0 ? c.charter[i] / (v + c.charter[i]) * 100 : null);
+      if (metric === 'cshare') return share;
+      for (let i = bi; i < NY; i++) out[i] = share[i] - share[bi];
+    }
+    return out;
+  }
+  let cache = null;      // id -> metric series for the current controls
+  function recompute() {
+    cache = new Map();
+    for (const id of ids()) cache.set(id, metricSeries(id, state.metric));
+  }
+  function valueAt(id, i = state.yi) { return cache.get(id)[i]; }
+
+  // Colour scale for the current metric
+  let color = null, colorDomain = null;
+  function buildColor() {
+    const m = METRIC_META[state.metric];
+    const neutral = cssVar('--neutral');
+    if (m.kind === 'div') {
+      const neg = cssVar('--neg'), negDeep = cssVar('--neg-deep'), pos = cssVar('--pos'), posDeep = cssVar('--pos-deep');
+      const left = d3.piecewise(d3.interpolateLab, [negDeep, neg, neutral]);
+      const right = d3.piecewise(d3.interpolateLab, [neutral, pos, posDeep]);
+      const interp = t => t < 0.5 ? left(t * 2) : right((t - 0.5) * 2);
+      colorDomain = [-m.span, m.span];
+      color = d3.scaleDiverging(interp).domain([-m.span, 0, m.span]).clamp(true);
+    } else if (m.kind === 'negseq') {
+      const neg = cssVar('--neg'), negDeep = cssVar('--neg-deep');
+      colorDomain = [-m.span, 0];
+      color = d3.scaleSequential(d3.piecewise(d3.interpolateLab, [negDeep, neg, neutral])).domain([-m.span, 0]).clamp(true);
+    } else {
+      colorDomain = [0, m.span];
+      color = d3.scaleSequential(d3.piecewise(d3.interpolateLab, [cssVar('--seq-lo'), cssVar('--pos'), cssVar('--seq-hi')])).domain([0, m.span]).clamp(true);
+    }
+  }
+  function fillFor(v) { return (v === null || v === undefined || Number.isNaN(v)) ? 'url(#hatch)' : color(v); }
+
+  // =====================================================================
+  // Geography
+  // =====================================================================
+  const topo = DATA.topology;
+  const allFeatures = topojson.feature(topo, topo.objects.data).features;
+  // D3 expects clockwise exterior rings (spherical winding). One district ring in the
+  // source is wound the other way, which D3 would read as "the whole globe minus the
+  // district", so rewind any ring whose spherical area says it is inside-out.
+  function rewindRing(ring, isHole) {
+    const a = d3.geoArea({ type: 'Polygon', coordinates: [ring] });
+    if ((a > 2 * Math.PI) !== isHole) ring.reverse();
+  }
+  for (const f of allFeatures) {
+    const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    for (const poly of polys) poly.forEach((ring, i) => rewindRing(ring, i > 0));
+  }
+  const leaFeatures = allFeatures.filter(f => f.properties.layer === 'lea');
+  const countyFeatures = allFeatures.filter(f => f.properties.layer === 'county');
+  const countyGeomObj = { type: 'GeometryCollection', geometries: topo.objects.data.geometries.filter(g => g.properties.layer === 'county') };
+  const leaGeomObj = { type: 'GeometryCollection', geometries: topo.objects.data.geometries.filter(g => g.properties.layer === 'lea') };
+  const stateOutline = topojson.mesh(topo, countyGeomObj, (a, b) => a === b);
+  const countyMesh = topojson.mesh(topo, countyGeomObj, (a, b) => a !== b);
+  const featById = new Map(allFeatures.map(f => [f.properties.layer + ':' + f.properties.id, f]));
+  function features() { return state.level === 'lea' ? leaFeatures : countyFeatures; }
+  function featOf(id) { return featById.get(state.level + ':' + id); }
+
+  const MAIN_W = 800, MAIN_H = 400, INSET_W = 400, INSET_H = 400;
+  const projMain = d3.geoAlbers().rotate([79.6, 0]).center([0, 35.5]).parallels([34.4, 36.3])
+    .fitExtent([[6, 6], [MAIN_W - 6, MAIN_H - 6]], { type: 'FeatureCollection', features: countyFeatures });
+  const pathMain = d3.geoPath(projMain);
+  const projInset = d3.geoAlbers().rotate([79.6, 0]).center([0, 35.5]).parallels([34.4, 36.3]);
+  const pathInset = d3.geoPath(projInset);
+  function fitInset() {
+    const fc = { type: 'FeatureCollection', features: focusIds().map(featOf) };
+    projInset.fitExtent([[14, 14], [INSET_W - 14, INSET_H - 14]], fc);
+  }
+
+  // =====================================================================
+  // Tooltip
+  // =====================================================================
+  const tt = $('#tt');
+  function showTip(html, ev) { tt.replaceChildren(...html); tt.style.display = 'block'; moveTip(ev); }
+  function moveTip(ev) {
+    const pad = 14, w = tt.offsetWidth, h = tt.offsetHeight;
+    let x = ev.clientX + pad, y = ev.clientY + pad;
+    if (x + w > window.innerWidth - 8) x = ev.clientX - w - pad;
+    if (y + h > window.innerHeight - 8) y = ev.clientY - h - pad;
+    tt.style.left = x + 'px'; tt.style.top = y + 'px';
+  }
+  function hideTip() { tt.style.display = 'none'; }
+  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function unitTip(id) {
+    const s = admSeries(id), v = valueAt(id), m = METRIC_META[state.metric];
+    const nodes = [];
+    nodes.push(el('div', 't', nameOf(id) + (state.level === 'lea' ? ' · ' + countyOf(id) + ' Co.' : '')));
+    const big = el('div', 'big' + (v === null ? '' : v < 0 ? ' neg' : v > 0 ? ' pos' : ''), v === null ? 'n/a' : m.fmt(v));
+    nodes.push(big);
+    nodes.push(el('div', 'k', m.label + (state.metric === 'cum' || state.metric === 'cshareDelta' ? ' ' + sy(state.base) : '') + ', ' + sy(YEARS[state.yi])));
+    const r1 = el('div', 'row'); r1.append(el('span', 'k', 'ADM ' + sy(YEARS[state.yi])), el('span', '', fmtInt(s[state.yi]))); nodes.push(r1);
+    const pk = d3.maxIndex(s);
+    const r2 = el('div', 'row'); r2.append(el('span', 'k', 'Peak ' + sy(YEARS[pk])), el('span', '', fmtInt(s[pk]))); nodes.push(r2);
+    if (state.level === 'county') {
+      const c = DATA.counties[id];
+      const r3 = el('div', 'row'); r3.append(el('span', 'k', 'Charter ADM (' + c.charterSchools[state.yi] + ' schools)'), el('span', '', fmtInt(c.charter[state.yi]))); nodes.push(r3);
+      const r4 = el('div', 'row'); r4.append(el('span', 'k', 'Districts'), el('span', '', c.leaCodes.map(k => DATA.leas[k].name.replace(' Schools', '').replace(' Public', '')).join(', '))); nodes.push(r4);
+    }
+    nodes.push(sparkSvg(s, 250, 44, state.yi));
+    nodes.push(el('div', 'sub', 'Click to ' + (isSelected(id) ? 'remove from' : 'add to') + ' the comparison'));
+    return nodes;
+  }
+  function sparkSvg(s, w, h, hi) {
+    const svg = d3.create('svg').attr('width', w).attr('height', h).attr('viewBox', [0, 0, w, h]);
+    const x = d3.scaleLinear().domain([0, NY - 1]).range([2, w - 2]);
+    const y = d3.scaleLinear().domain([d3.min(s) * 0.98, d3.max(s) * 1.02]).range([h - 3, 3]);
+    svg.append('path').attr('d', d3.line().x((d, i) => x(i)).y(d => y(d))(s)).attr('fill', 'none').attr('stroke', cssVar('--ink-2')).attr('stroke-width', 1.5);
+    const pk = d3.maxIndex(s);
+    svg.append('circle').attr('cx', x(pk)).attr('cy', y(s[pk])).attr('r', 2.5).attr('fill', cssVar('--muted'));
+    if (hi !== undefined) svg.append('circle').attr('cx', x(hi)).attr('cy', y(s[hi])).attr('r', 3.5).attr('fill', cssVar('--ink'));
+    return svg.node();
+  }
+
+  // =====================================================================
+  // Maps
+  // =====================================================================
+  const svgMain = d3.select('#mapMain'), svgInset = d3.select('#mapInset');
+  function buildMap(svg, path, W, H, clip) {
+    svg.selectAll('*').remove();
+    if (clip) {
+      svg.append('clipPath').attr('id', 'clip-' + svg.attr('id')).append('rect').attr('width', W).attr('height', H).attr('rx', 8);
+    }
+    const g = svg.append('g').attr('clip-path', clip ? 'url(#clip-' + svg.attr('id') + ')' : null);
+    g.append('rect').attr('class', 'frame').attr('width', W).attr('height', H).attr('rx', 8).attr('fill', 'none').attr('stroke', clip ? cssVar('--axis') : 'none');
+    g.append('g').attr('class', 'units').selectAll('path').data(features(), f => f.properties.id).join('path')
+      .attr('class', 'unit').attr('d', path).attr('fill', f => fillFor(valueAt(f.properties.id)))
+      .classed('selected', f => isSelected(f.properties.id))
+      .on('pointerenter', (ev, f) => showTip(unitTip(f.properties.id), ev))
+      .on('pointermove', moveTip).on('pointerleave', hideTip)
+      .on('click', (ev, f) => toggleSelect(f.properties.id));
+    if (state.level === 'lea') g.append('path').attr('class', 'mesh').attr('d', path(countyMesh)).style('stroke', cssVar('--axis')).style('stroke-width', 0.5).style('opacity', 0.6);
+    g.append('path').attr('class', 'outline').attr('d', path(stateOutline));
+    g.append('path').attr('class', 'focus-ring').attr('d', path({ type: 'FeatureCollection', features: focusIds().map(featOf) }));
+    if (clip) {
+      // labels inside the inset
+      g.append('g').selectAll('text').data(focusIds().map(featOf)).join('text').attr('class', 'lbl')
+        .attr('transform', f => 'translate(' + path.centroid(f) + ')').attr('text-anchor', 'middle')
+        .each(function (f) {
+          const nm = nameOf(f.properties.id).replace(' City Schools', '').replace(' Public Schools', '').replace(' County Schools', ' County').replace(' Schools', '');
+          const parts = nm.split(' ');
+          const lines = parts.length > 2 ? [parts.slice(0, -1).join(' '), parts[parts.length - 1]] : [nm];
+          d3.select(this).selectAll('tspan').data(lines).join('tspan').attr('x', 0).attr('dy', (d, i) => i === 0 ? (lines.length > 1 ? '-0.2em' : '0.35em') : '1.1em').text(d => d);
+        });
+    }
+    return g;
+  }
+  function updateMapFills() {
+    d3.selectAll('.map-svg path.unit').attr('fill', f => fillFor(valueAt(f.properties.id))).classed('selected', f => isSelected(f.properties.id));
+  }
+  function renderMaps() {
+    fitInset();
+    buildMap(svgMain, pathMain, MAIN_W, MAIN_H, false);
+    buildMap(svgInset, pathInset, INSET_W, INSET_H, true);
+    $('#mapTitle').textContent = 'Statewide · ' + (state.level === 'lea' ? '115 districts' : '100 counties') + ' · ' + sy(YEARS[state.yi]);
+    $('#insetHint').textContent = state.level === 'lea'
+      ? 'Chapel Hill-Carrboro, Orange, Durham, Wake and Chatham, same colors as the state map.'
+      : 'Orange, Durham, Wake and Chatham counties, same colors as the state map.';
+  }
+  function renderLegend() {
+    const m = METRIC_META[state.metric], host = $('#legend');
+    host.replaceChildren();
+    const lab = el('span', '', m.label + (state.metric === 'cum' || state.metric === 'cshareDelta' ? ' since ' + sy(state.base) : '') + ' (' + m.unit + ')');
+    host.append(lab);
+    const stops = d3.range(0, 1.0001, 0.1).map(t => color(colorDomain[0] + t * (colorDomain[1] - colorDomain[0])));
+    const bar = el('div', 'bar'); bar.style.background = 'linear-gradient(90deg,' + stops.join(',') + ')';
+    const ticks = el('div', 'bar-ticks');
+    const a = colorDomain[0], b = colorDomain[1], mid = (a + b) / 2;
+    ticks.append(el('span', '', (a < 0 ? '≤ ' : '') + signed(a, 0)), el('span', '', signed(mid, 0)), el('span', '', '≥ ' + signed(b, 0)));
+    const wrap = el('div'); wrap.append(bar, ticks); host.append(wrap);
+    const h = el('span'); const sw = el('span', 'swatch'); sw.style.background = 'url(#hatch)'; sw.style.backgroundImage = 'repeating-linear-gradient(45deg, var(--axis) 0 1px, var(--neutral) 1px 5px)';
+    h.append(sw, document.createTextNode('no value (before base year, or first years of a rolling window)')); host.append(h);
+  }
+
+  // =====================================================================
+  // Distribution strip (dot histogram of every unit for the current year)
+  // =====================================================================
+  function renderStrip() {
+    const svg = d3.select('#strip'), W = 1200, H = 110; svg.selectAll('*').remove();
+    const m = METRIC_META[state.metric];
+    const vals = ids().map(id => ({ id, v: valueAt(id) })).filter(d => d.v !== null && !Number.isNaN(d.v));
+    $('#stripTitle').textContent = 'Where does each ' + (state.level === 'lea' ? 'district' : 'county') + ' sit in ' + sy(YEARS[state.yi]) + '? · ' + m.label;
+    if (!vals.length) { svg.append('text').attr('x', 20).attr('y', 50).attr('fill', cssVar('--muted')).text('No values for this year and metric.'); return; }
+    const lo = Math.min(colorDomain[0], d3.min(vals, d => d.v)), hi = Math.max(colorDomain[1], d3.max(vals, d => d.v));
+    const x = d3.scaleLinear().domain([lo, hi]).nice().range([40, W - 40]);
+    const bins = d3.bin().domain(x.domain()).thresholds(90).value(d => d.v)(vals);
+    const r = 4.2, baseY = H - 28;
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (baseY + 6) + ')').call(d3.axisBottom(x).ticks(12).tickFormat(v => signed(v, 0) + (m.unit === '%' ? '%' : '')).tickSize(4));
+    const med = d3.median(vals, d => d.v);
+    svg.append('line').attr('x1', x(med)).attr('x2', x(med)).attr('y1', 8).attr('y2', baseY + 4).attr('stroke', cssVar('--ink')).attr('stroke-width', 1);
+    svg.append('text').attr('x', x(med) + 5).attr('y', 14).attr('font-size', 11).attr('fill', cssVar('--ink-2')).text('median ' + m.fmt(med));
+    if (colorDomain[0] < 0 && colorDomain[1] > 0) svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', baseY - 60).attr('y2', baseY + 4).attr('stroke', cssVar('--axis'));
+    const dots = [];
+    for (const b of bins) {
+      const cx = x((b.x0 + b.x1) / 2);
+      b.sort((a, c) => a.v - c.v).forEach((d, k) => dots.push({ ...d, cx, cy: baseY - k * (r * 2 + 0.5) }));
+    }
+    const g = svg.append('g');
+    g.selectAll('circle').data(dots.filter(d => !isSelected(d.id))).join('circle')
+      .attr('cx', d => d.cx).attr('cy', d => d.cy).attr('r', r).attr('fill', d => color(d.v)).attr('stroke', cssVar('--surface')).attr('stroke-width', 1)
+      .style('cursor', 'pointer')
+      .on('pointerenter', (ev, d) => showTip(unitTip(d.id), ev)).on('pointermove', moveTip).on('pointerleave', hideTip)
+      .on('click', (ev, d) => toggleSelect(d.id));
+    const sel = dots.filter(d => isSelected(d.id));
+    g.selectAll('circle.sel').data(sel).join('circle').attr('class', 'sel')
+      .attr('cx', d => d.cx).attr('cy', d => d.cy).attr('r', r + 1.5).attr('fill', d => slotColor(slotOf(d.id))).attr('stroke', cssVar('--ink')).attr('stroke-width', 1.5)
+      .style('cursor', 'pointer')
+      .on('pointerenter', (ev, d) => showTip(unitTip(d.id), ev)).on('pointermove', moveTip).on('pointerleave', hideTip)
+      .on('click', (ev, d) => toggleSelect(d.id));
+    // label selected units, nudging apart on x
+    const labs = sel.map(d => ({ ...d, lx: d.cx })).sort((a, b) => a.cx - b.cx);
+    for (let i = 1; i < labs.length; i++) if (labs[i].lx - labs[i - 1].lx < 92) labs[i].lx = labs[i - 1].lx + 92;
+    if (labs.length) {
+      const shift = d3.mean(labs, d => d.cx) - d3.mean(labs, d => d.lx);
+      const minL = 50, maxL = W - 50;
+      const clampShift = Math.max(minL - labs[0].lx, Math.min(maxL - labs[labs.length - 1].lx, shift));
+      labs.forEach(d => { d.lx += clampShift; });
+    }
+    g.selectAll('text.sl').data(labs).join('text').attr('class', 'sl').attr('x', d => d.lx).attr('y', 30).attr('font-size', 11).attr('font-weight', 600)
+      .attr('text-anchor', 'middle').attr('fill', cssVar('--ink'))
+      .text(d => shortName(d.id) + ' ' + m.fmt(d.v));
+    g.selectAll('line.sl').data(labs).join('line').attr('class', 'sl').attr('x1', d => d.lx).attr('x2', d => d.cx).attr('y1', 34).attr('y2', d => d.cy - r - 2).attr('stroke', cssVar('--muted')).attr('stroke-width', 1);
+    const rank = vals.slice().sort((a, b) => a.v - b.v).findIndex(d => d.id === anchorId());
+    if (rank >= 0) svg.append('text').attr('x', W - 40).attr('y', 14).attr('text-anchor', 'end').attr('font-size', 11).attr('fill', cssVar('--ink-2'))
+      .text(shortName(anchorId()) + ' ranks ' + (rank + 1) + ' of ' + vals.length + (m.kind === 'seq' ? ' (1 = lowest share)' : ' (1 = steepest decline)'));
+  }
+  const SHORT = { '681LEA': 'CHCCS', '340LEA': 'WS/Forsyth', '250LEA': 'Craven', '760LEA': 'Randolph', '780LEA': 'Robeson', '491LEA': 'Mooresville', '700LEA': 'Eliz. City-Pasquotank', '640LEA': 'Nash', '600LEA': 'Charlotte-Meck.', '010LEA': 'Alamance-Burlington', '490LEA': 'Iredell-Statesville', '800LEA': 'Rowan-Salisbury', '210LEA': 'Edenton-Chowan' };
+  function shortName(id) {
+    if (state.level === 'county') return nameOf(id).replace(' County', ' Co.');
+    if (SHORT[id]) return SHORT[id];
+    return nameOf(id).replace(' County Public Schools', '').replace(' County Schools', '').replace(' Public Schools', '').replace(' City Schools', ' City').replace(' Schools', '');
+  }
+
+  // =====================================================================
+  // Event badges (shared by several charts)
+  // =====================================================================
+  function drawEvents(g, x, top, bottom, opts = {}) {
+    const evs = EVENTS.filter(e => e.x <= YEARS[NY - 1] + 1);
+    const eg = g.append('g');
+    for (const e of evs) {
+      const xx = x(e.x); if (xx < x.range()[0] - 1 || xx > x.range()[1] + 1) continue;
+      eg.append('line').attr('class', 'ev-line' + (e.beyond ? ' beyond' : '')).attr('x1', xx).attr('x2', xx).attr('y1', top + 10).attr('y2', bottom);
+      const b = eg.append('g').attr('class', 'ev-badge-g' + (e.beyond ? ' beyond' : '')).attr('transform', 'translate(' + xx + ',' + top + ')').style('cursor', 'help');
+      b.append('circle').attr('r', 8); b.append('text').text(e.n);
+      b.on('pointerenter', ev => showTip(eventTip(e), ev)).on('pointermove', moveTip).on('pointerleave', hideTip);
+    }
+  }
+  function eventTip(e) { return [el('div', 't', e.n + '. ' + e.label + ' · ' + e.when), el('div', '', e.detail)]; }
+
+  // =====================================================================
+  // Line chart of selected units
+  // =====================================================================
+  function renderLine() {
+    const svg = d3.select('#lineChart'), W = 760, H = 340; svg.selectAll('*').remove();
+    const M = { t: 30, r: 150, b: 32, l: 52 };
+    const bi = YEARS.indexOf(state.base);
+    const sel = selected();
+    const series = sel.map(id => {
+      const s = admSeries(id);
+      const vals = state.lineMode === 'index' ? s.map(v => v / s[bi] * 100) : s.slice();
+      return { id, name: shortName(id), color: slotColor(slotOf(id)), vals };
+    });
+    // statewide reference
+    const st = state.level === 'county' && state.scope === 'total' ? DATA.state.lea.map((v, i) => v + DATA.state.charter[i] - DATA.state.charterVirtual[i]) : DATA.state.lea;
+    const ref = { id: 'state', name: state.level === 'county' && state.scope === 'total' ? 'NC districts + charters' : 'NC districts', ref: true, color: cssVar('--muted'), vals: state.lineMode === 'index' ? st.map(v => v / st[bi] * 100) : null };
+    const all = ref.vals ? series.concat([ref]) : series;
+    const x = d3.scaleLinear().domain([YEARS[0], YEARS[NY - 1]]).range([M.l, W - M.r]);
+    const yMin = d3.min(all, d => d3.min(d.vals)), yMax = d3.max(all, d => d3.max(d.vals));
+    const y = state.lineMode === 'index'
+      ? d3.scaleLinear().domain([Math.min(yMin, 100) - 2, Math.max(yMax, 100) + 2]).nice().range([H - M.b, M.t])
+      : d3.scaleLinear().domain([0, yMax * 1.05]).nice().range([H - M.b, M.t]);
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)').call(d3.axisLeft(y).ticks(6).tickFormat(v => state.lineMode === 'index' ? v : d3.format('.2s')(v)).tickSize(-(W - M.r - M.l))).call(g => { g.select('.domain').remove(); g.selectAll('line').attr('class', 'gridline'); });
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (H - M.b) + ')').call(d3.axisBottom(x).ticks(10).tickFormat(v => sy(v)).tickSize(4)).call(g => g.selectAll('text').attr('transform', 'rotate(0)'));
+    if (state.lineMode === 'index') svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(100)).attr('y2', y(100)).attr('stroke', cssVar('--axis')).attr('stroke-width', 1);
+    drawEvents(svg, x, M.t - 14, H - M.b);
+    // current-year cursor
+    svg.append('line').attr('class', 'cursor-line').attr('x1', x(YEARS[state.yi])).attr('x2', x(YEARS[state.yi])).attr('y1', M.t).attr('y2', H - M.b);
+    const line = d3.line().x((d, i) => x(YEARS[i])).y(d => y(d)).defined(d => d !== null && Number.isFinite(d));
+    const g = svg.append('g');
+    for (const s of all) {
+      g.append('path').attr('class', 'series-line' + (s.ref ? ' ref' : '')).attr('d', line(s.vals)).attr('stroke', s.color);
+    }
+    // end labels, de-overlapped
+    const labs = all.map(s => ({ s, y: y(s.vals[NY - 1]) })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 13) labs[i].y = labs[i - 1].y + 13;
+    g.selectAll('circle.end').data(all).join('circle').attr('class', 'end-dot').attr('cx', x(YEARS[NY - 1])).attr('cy', s => y(s.vals[NY - 1])).attr('r', 3.5).attr('fill', s => s.color);
+    g.selectAll('text.sl').data(labs).join('text').attr('class', 'series-label').attr('x', x(YEARS[NY - 1]) + 8).attr('y', d => d.y).attr('dy', '0.35em').attr('fill', d => d.s.ref ? cssVar('--muted') : cssVar('--ink'))
+      .text(d => d.s.name + ' ' + (state.lineMode === 'index' ? d.s.vals[NY - 1].toFixed(1) : fmtInt(d.s.vals[NY - 1])));
+    // hover crosshair
+    const hover = svg.append('g').style('display', 'none');
+    const hl = hover.append('line').attr('stroke', cssVar('--ink')).attr('stroke-width', 1).attr('y1', M.t).attr('y2', H - M.b).attr('opacity', .5);
+    const hd = hover.append('g');
+    svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.r - M.l).attr('height', H - M.b - M.t).attr('fill', 'transparent').style('cursor', 'crosshair')
+      .on('pointerenter', () => hover.style('display', null))
+      .on('pointerleave', () => { hover.style('display', 'none'); hideTip(); })
+      .on('pointermove', function (ev) {
+        const [mx] = d3.pointer(ev); const yr = Math.round(x.invert(mx)); const i = YEARS.indexOf(Math.max(YEARS[0], Math.min(YEARS[NY - 1], yr)));
+        hl.attr('x1', x(YEARS[i])).attr('x2', x(YEARS[i]));
+        hd.selectAll('circle').data(all).join('circle').attr('cx', x(YEARS[i])).attr('cy', s => y(s.vals[i])).attr('r', 4).attr('fill', s => s.color).attr('stroke', cssVar('--surface')).attr('stroke-width', 1.5);
+        const nodes = [el('div', 't', sy(YEARS[i]))];
+        for (const s of all) {
+          const r = el('div', 'row'); const k = el('span', 'k'); const sw = el('i'); sw.style.cssText = 'display:inline-block;width:12px;height:2px;background:' + s.color + ';vertical-align:middle;margin-right:5px;'; k.append(sw, document.createTextNode(s.name));
+          const adm = s.ref ? st[i] : admSeries(s.id)[i];
+          r.append(k, el('span', '', state.lineMode === 'index' ? s.vals[i].toFixed(1) + ' (' + fmtInt(adm) + ')' : fmtInt(adm))); nodes.push(r);
+        }
+        if (state.lineMode === 'index') nodes.push(el('div', 'sub', 'Index: ' + sy(state.base) + ' = 100. ADM in parentheses.'));
+        showTip(nodes, ev);
+      })
+      .on('click', function (ev) { const [mx] = d3.pointer(ev); const yr = Math.round(x.invert(mx)); setYear(YEARS.indexOf(Math.max(YEARS[0], Math.min(YEARS[NY - 1], yr)))); });
+    svg.append('text').attr('x', M.l).attr('y', 14).attr('font-size', 11).attr('fill', cssVar('--muted'))
+      .text(state.lineMode === 'index' ? 'Enrollment index, ' + sy(state.base) + ' = 100' : 'Average daily membership');
+    renderChips();
+  }
+  function renderChips() {
+    const host = $('#chips'); host.replaceChildren();
+    for (const id of selected()) {
+      const c = el('span', 'chip'); const i = el('i'); i.style.background = slotColor(slotOf(id)); c.append(i, document.createTextNode(shortName(id)));
+      if (selected().length > 1) { const b = el('button', '', '×'); b.title = 'Remove'; b.setAttribute('aria-label', 'Remove ' + nameOf(id)); b.onclick = () => toggleSelect(id); c.append(b); }
+      host.append(c);
+    }
+    const r = el('span', 'chip ref'); r.append(el('i'), document.createTextNode('NC total (reference)')); host.append(r);
+    if (selected().length < 8) { const h = el('span', '', ' ← click any map unit, dot, card or heatmap row to add one (up to 8)'); h.style.cssText = 'color:var(--muted);font-size:12px;align-self:center'; host.append(h); }
+  }
+
+  // =====================================================================
+  // Triangle cards
+  // =====================================================================
+  function renderCards() {
+    const host = $('#cards5'); host.replaceChildren();
+    $('#cardsTitle').textContent = state.level === 'lea' ? 'Triangle focus: five districts' : 'Triangle focus: four counties';
+    for (const id of focusIds()) {
+      const s = admSeries(id), pk = d3.maxIndex(s), last = s[NY - 1], cur = s[state.yi];
+      const card = el('div', 'mini'); card.tabIndex = 0; card.setAttribute('role', 'button'); card.setAttribute('aria-pressed', String(isSelected(id)));
+      if (isSelected(id)) { const d = el('span', 'dot'); d.style.background = slotColor(slotOf(id)); card.append(d); }
+      card.append(el('div', 'n', nameOf(id)));
+      card.append(el('div', 'v', fmtInt(cur)));
+      const d1 = el('div', 'd'); const pct = (cur / s[pk] - 1) * 100;
+      d1.append(document.createTextNode('ADM ' + sy(YEARS[state.yi]) + ' · '), Object.assign(el('b', pct < 0 ? 'neg' : 'pos'), { textContent: signed(pct, 1) + '%' }), document.createTextNode(' vs peak ' + sy(YEARS[pk])));
+      card.append(d1);
+      const w = 200, h = 48;
+      const svg = d3.create('svg').attr('viewBox', [0, 0, w, h]).attr('preserveAspectRatio', 'none');
+      const x = d3.scaleLinear().domain([YEARS[0], YEARS[NY - 1]]).range([3, w - 3]);
+      const y = d3.scaleLinear().domain([d3.min(s) * 0.97, d3.max(s) * 1.03]).range([h - 3, 6]);
+      for (const e of EVENTS) if (e.x < YEARS[NY - 1]) svg.append('line').attr('x1', x(e.x)).attr('x2', x(e.x)).attr('y1', 4).attr('y2', h - 3).attr('stroke', cssVar('--grid'));
+      svg.append('path').attr('d', d3.area().x((d, i) => x(YEARS[i])).y0(h - 3).y1(d => y(d))(s)).attr('fill', isSelected(id) ? slotColor(slotOf(id)) : cssVar('--muted')).attr('opacity', 0.15);
+      svg.append('path').attr('d', d3.line().x((d, i) => x(YEARS[i])).y(d => y(d))(s)).attr('fill', 'none').attr('stroke', isSelected(id) ? slotColor(slotOf(id)) : cssVar('--ink-2')).attr('stroke-width', 1.8);
+      svg.append('circle').attr('cx', x(YEARS[pk])).attr('cy', y(s[pk])).attr('r', 3).attr('fill', cssVar('--ink'));
+      svg.append('line').attr('x1', x(YEARS[state.yi])).attr('x2', x(YEARS[state.yi])).attr('y1', 4).attr('y2', h - 3).attr('stroke', cssVar('--ink')).attr('opacity', .5);
+      card.append(svg.node());
+      card.onclick = () => toggleSelect(id);
+      card.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggleSelect(id); } };
+      card.addEventListener('pointerenter', ev => showTip(unitTip(id), ev)); card.addEventListener('pointermove', moveTip); card.addEventListener('pointerleave', hideTip);
+      host.append(card);
+    }
+  }
+
+  // =====================================================================
+  // Heatmap: every unit x every year
+  // =====================================================================
+  function renderHeat() {
+    const svg = d3.select('#heat'); svg.selectAll('*').remove();
+    const m = METRIC_META[state.metric];
+    const focus = focusIds(), others = ids().filter(id => !focus.includes(id));
+    const bi = YEARS.indexOf(state.base);
+    const key = {
+      latest: id => { const v = cache.get(id)[NY - 1]; return v === null ? Infinity : v; },
+      cum: id => { const s = admSeries(id); return s[bi] ? s[NY - 1] / s[bi] : Infinity; },
+      size: id => -admSeries(id)[NY - 1],
+      name: id => nameOf(id),
+      county: id => countyOf(id) + nameOf(id),
+    }[state.sort];
+    others.sort((a, b) => d3.ascending(key(a), key(b)));
+    const rows = focus.concat(others);
+    const LBL = 190, cw = 46, rh = 11, top = 44, W = LBL + cw * NY + 16, H = top + rows.length * rh + 8 + 6;
+    svg.attr('viewBox', [0, 0, W, H]).attr('width', W).attr('height', H).style('width', 'auto').style('max-width', '100%');
+    const x = i => LBL + i * cw;
+    const yOf = r => top + r * rh + (r >= focus.length ? 6 : 0);
+    svg.append('g').selectAll('text').data(YEARS).join('text').attr('class', 'col').attr('x', (d, i) => x(i) + cw / 2).attr('y', top - 6).text(d => sy(d));
+    const xe = d3.scaleLinear().domain([YEARS[0] - 0.5, YEARS[NY - 1] + 0.5]).range([LBL, LBL + cw * NY]);
+    drawEvents(svg, xe, 12, H - 8);
+    const g = svg.append('g');
+    rows.forEach((id, r) => {
+      const vals = cache.get(id), yy = yOf(r);
+      g.append('text').attr('class', 'row' + (focus.includes(id) ? ' pinned' : '') + (isSelected(id) ? ' sel' : '')).attr('x', LBL - 6).attr('y', yy + rh - 2.5).attr('text-anchor', 'end')
+        .text(shortName(id).slice(0, 30)).on('click', () => toggleSelect(id));
+      if (isSelected(id)) g.append('rect').attr('x', 0).attr('y', yy).attr('width', 5).attr('height', rh - 1).attr('fill', slotColor(slotOf(id)));
+      g.append('g').selectAll('rect').data(vals.map((v, i) => ({ v, i }))).join('rect').attr('class', 'cell')
+        .attr('x', d => x(d.i) + 0.5).attr('y', yy + 0.5).attr('width', cw - 1).attr('height', rh - 1).attr('fill', d => fillFor(d.v)).attr('rx', 1)
+        .on('pointerenter', (ev, d) => showTip([el('div', 't', nameOf(id) + ' · ' + sy(YEARS[d.i])), el('div', 'big' + (d.v === null ? '' : d.v < 0 ? ' neg' : ' pos'), d.v === null ? 'n/a' : m.fmt(d.v)), el('div', 'k', m.label), (() => { const r = el('div', 'row'); r.append(el('span', 'k', 'ADM'), el('span', '', fmtInt(admSeries(id)[d.i]))); return r; })()], ev))
+        .on('pointermove', moveTip).on('pointerleave', hideTip)
+        .on('click', (ev, d) => { setYear(d.i); if (!isSelected(id)) toggleSelect(id); });
+    });
+    if (others.length) svg.append('line').attr('class', 'divider').attr('x1', 0).attr('x2', W).attr('y1', yOf(focus.length) - 3).attr('y2', yOf(focus.length) - 3);
+    // current-year column marker
+    svg.append('rect').attr('x', x(state.yi)).attr('y', top - 2).attr('width', cw).attr('height', H - top - 4).attr('fill', 'none').attr('stroke', cssVar('--ink')).attr('stroke-width', 1.2).attr('rx', 2).attr('pointer-events', 'none');
+    $('#heatTitle').textContent = (state.level === 'lea' ? 'Every district, every year' : 'Every county, every year') + ' · ' + m.label + (state.metric === 'cum' || state.metric === 'cshareDelta' ? ' since ' + sy(state.base) : '');
+  }
+
+  // =====================================================================
+  // Statewide stacked area and grow/shrink bars
+  // =====================================================================
+  function renderStack() {
+    const svg = d3.select('#stack'), W = 760, H = 300; svg.selectAll('*').remove();
+    const M = { t: 30, r: 150, b: 32, l: 56 };
+    const lea = DATA.state.lea, ch = DATA.state.charter;
+    const x = d3.scaleLinear().domain([YEARS[0], YEARS[NY - 1]]).range([M.l, W - M.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(lea.map((v, i) => v + ch[i])) * 1.05]).nice().range([H - M.b, M.t]);
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)').call(d3.axisLeft(y).ticks(6).tickFormat(d3.format('.2s')).tickSize(-(W - M.r - M.l))).call(g => { g.select('.domain').remove(); g.selectAll('line').attr('class', 'gridline'); });
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (H - M.b) + ')').call(d3.axisBottom(x).ticks(10).tickFormat(v => sy(v)).tickSize(4));
+    const c1 = cssVar('--s1'), c2 = cssVar('--s2');
+    const areaLea = d3.area().x((d, i) => x(YEARS[i])).y0(y(0)).y1(d => y(d));
+    const areaCh = d3.area().x((d, i) => x(YEARS[i])).y0((d, i) => y(lea[i])).y1((d, i) => y(lea[i] + d));
+    svg.append('path').attr('d', areaLea(lea)).attr('fill', c1).attr('opacity', 0.85);
+    svg.append('path').attr('d', areaCh(ch)).attr('fill', c2).attr('opacity', 0.9);
+    svg.append('path').attr('d', d3.line().x((d, i) => x(YEARS[i])).y(d => y(d))(lea)).attr('fill', 'none').attr('stroke', cssVar('--surface')).attr('stroke-width', 2);
+    drawEvents(svg, x, M.t - 14, H - M.b);
+    svg.append('line').attr('class', 'cursor-line').attr('x1', x(YEARS[state.yi])).attr('x2', x(YEARS[state.yi])).attr('y1', M.t).attr('y2', H - M.b);
+    // direct labels at right
+    const lx = x(YEARS[NY - 1]) + 8;
+    svg.append('text').attr('class', 'series-label').attr('x', lx).attr('y', y(lea[NY - 1] / 2)).attr('fill', cssVar('--ink')).text('Districts ' + d3.format('.3s')(lea[NY - 1]).replace('M', 'M'));
+    svg.append('text').attr('class', 'series-label').attr('x', lx).attr('y', y(lea[NY - 1] + ch[NY - 1] / 2)).attr('fill', cssVar('--ink')).text('Charters ' + fmtInt(ch[NY - 1]));
+    svg.append('text').attr('x', M.l).attr('y', 14).attr('font-size', 11).attr('fill', cssVar('--muted')).text('Students (ADM), statewide');
+    // legend
+    const lg = svg.append('g').attr('transform', 'translate(' + (W - M.r + 8) + ',' + (M.t + 8) + ')');
+    [['Districts (115 LEAs)', c1], ['Charter schools', c2]].forEach((d, i) => {
+      lg.append('rect').attr('x', 0).attr('y', i * 16).attr('width', 12).attr('height', 10).attr('rx', 2).attr('fill', d[1]);
+      lg.append('text').attr('x', 16).attr('y', i * 16 + 9).attr('font-size', 11).attr('fill', cssVar('--ink-2')).text(d[0]);
+    });
+    // hover
+    const hover = svg.append('g').style('display', 'none');
+    const hl = hover.append('line').attr('stroke', cssVar('--ink')).attr('y1', M.t).attr('y2', H - M.b).attr('opacity', .5);
+    svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.r - M.l).attr('height', H - M.b - M.t).attr('fill', 'transparent').style('cursor', 'crosshair')
+      .on('pointerenter', () => hover.style('display', null)).on('pointerleave', () => { hover.style('display', 'none'); hideTip(); })
+      .on('pointermove', function (ev) {
+        const [mx] = d3.pointer(ev); const i = YEARS.indexOf(Math.max(YEARS[0], Math.min(YEARS[NY - 1], Math.round(x.invert(mx)))));
+        hl.attr('x1', x(YEARS[i])).attr('x2', x(YEARS[i]));
+        const tot = lea[i] + ch[i];
+        const rows = [['Districts', fmtInt(lea[i])], ['Charters (' + DATA.state.charterSchools[i] + ' schools)', fmtInt(ch[i])], ['Charter share', (ch[i] / tot * 100).toFixed(1) + '%'], ['Total public', fmtInt(tot)]];
+        showTip([el('div', 't', sy(YEARS[i]))].concat(rows.map(r => { const d = el('div', 'row'); d.append(el('span', 'k', r[0]), el('span', '', r[1])); return d; })), ev);
+      })
+      .on('click', function (ev) { const [mx] = d3.pointer(ev); setYear(YEARS.indexOf(Math.max(YEARS[0], Math.min(YEARS[NY - 1], Math.round(x.invert(mx)))))); });
+  }
+  function renderGrowShrink() {
+    const svg = d3.select('#growShrink'), W = 520, H = 300; svg.selectAll('*').remove();
+    const M = { t: 30, r: 16, b: 32, l: 40 };
+    const counts = YEARS.map((yr, i) => {
+      if (i === 0) return { yr, up: 0, down: 0 };
+      let up = 0, down = 0;
+      for (const id of ids()) { const s = admSeries(id); if (s[i] > s[i - 1]) up++; else if (s[i] < s[i - 1]) down++; }
+      return { yr, up, down };
+    }).slice(1);
+    const x = d3.scaleBand().domain(counts.map(d => d.yr)).range([M.l, W - M.r]).paddingInner(0.25);
+    const n = ids().length;
+    const y = d3.scaleLinear().domain([-n, n]).range([H - M.b, M.t]);
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + M.l + ',0)').call(d3.axisLeft(y).ticks(6).tickFormat(v => Math.abs(v)).tickSize(-(W - M.r - M.l))).call(g => { g.select('.domain').remove(); g.selectAll('line').attr('class', 'gridline'); });
+    svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + (H - M.b) + ')').call(d3.axisBottom(x).tickFormat(v => String(v).slice(2)).tickSize(0)).call(g => g.select('.domain').remove());
+    svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', cssVar('--axis'));
+    const pos = cssVar('--pos'), neg = cssVar('--neg');
+    const g = svg.append('g');
+    const bars = g.selectAll('g').data(counts).join('g');
+    bars.append('rect').attr('x', d => x(d.yr)).attr('width', x.bandwidth()).attr('y', d => y(d.up)).attr('height', d => Math.max(0, y(0) - y(d.up) - 1)).attr('fill', pos).attr('rx', 2);
+    bars.append('rect').attr('x', d => x(d.yr)).attr('width', x.bandwidth()).attr('y', y(0) + 1).attr('height', d => Math.max(0, y(0) - y(d.down) - 1)).attr('fill', neg).attr('rx', 2);
+    bars.append('rect').attr('x', d => x(d.yr) - x.step() * 0.125).attr('width', x.step()).attr('y', M.t).attr('height', H - M.b - M.t).attr('fill', 'transparent')
+      .on('pointerenter', (ev, d) => showTip([el('div', 't', sy(d.yr)), (() => { const r = el('div', 'row'); r.append(el('span', 'k', 'Grew'), el('span', '', String(d.up))); return r; })(), (() => { const r = el('div', 'row'); r.append(el('span', 'k', 'Shrank'), el('span', '', String(d.down))); return r; })(), (() => { const r = el('div', 'row'); r.append(el('span', 'k', 'Flat'), el('span', '', String(n - d.up - d.down))); return r; })()], ev))
+      .on('pointermove', moveTip).on('pointerleave', hideTip).on('click', (ev, d) => setYear(YEARS.indexOf(d.yr)));
+    const xe = d3.scaleLinear().domain([YEARS[1] - 0.5, YEARS[NY - 1] + 0.5]).range([M.l, W - M.r]);
+    drawEvents(svg, xe, M.t - 14, H - M.b);
+    const cur = counts.find(d => d.yr === YEARS[state.yi]);
+    if (cur) svg.append('rect').attr('x', x(cur.yr) - 2).attr('y', M.t).attr('width', x.bandwidth() + 4).attr('height', H - M.b - M.t).attr('fill', 'none').attr('stroke', cssVar('--ink')).attr('rx', 2).attr('pointer-events', 'none');
+    $('#gsTitle').textContent = 'How many ' + (state.level === 'lea' ? 'districts' : 'counties') + ' grew or shrank each year';
+  }
+
+  // =====================================================================
+  // KPIs, table, events list, controls
+  // =====================================================================
+  function renderKpis() {
+    const host = $('#kpis'); host.replaceChildren();
+    const c = DATA.leas[CHCCS].adm, pk = d3.maxIndex(c);
+    const st = DATA.state.lea, stPk = d3.maxIndex(st);
+    const ch = DATA.state.charter;
+    const share = ch[NY - 1] / (ch[NY - 1] + st[NY - 1]) * 100, share0 = ch[0] / (ch[0] + st[0]) * 100;
+    const tiles = [
+      { v: fmtInt(c[NY - 1]), l: 'CHCCS students, ' + sy(YEARS[NY - 1]) + ' (ADM)' },
+      { v: signed((c[NY - 1] / c[pk] - 1) * 100, 1) + '%', l: 'CHCCS since its ' + sy(YEARS[pk]) + ' peak (' + fmtInt(c[pk]) + ')', cls: 'neg' },
+      { v: signed((st[NY - 1] / st[stPk] - 1) * 100, 1) + '%', l: 'All 115 districts since their ' + sy(YEARS[stPk]) + ' peak', cls: 'neg' },
+      { v: fmtInt(ch[NY - 1]), l: 'Charter students statewide (' + share.toFixed(1) + '% of public, up from ' + share0.toFixed(1) + '% in ' + sy(YEARS[0]) + ')', cls: 'pos' },
+    ];
+    for (const t of tiles) { const k = el('div', 'kpi'); k.append(el('div', 'v' + (t.cls ? ' ' + t.cls : ''), t.v), el('div', 'l', t.l)); host.append(k); }
+  }
+  function renderTable() {
+    const host = $('#tableHost'); host.replaceChildren();
+    if (!$('#tableDetails').open) return;
+    const m = METRIC_META[state.metric];
+    const rows = ids().map(id => ({ id, name: nameOf(id), county: countyOf(id), adm: admSeries(id)[state.yi], v: valueAt(id) })).sort((a, b) => d3.ascending(a.v === null ? Infinity : a.v, b.v === null ? Infinity : b.v));
+    const t = el('table', 'data'); const th = el('tr');
+    ['#', state.level === 'lea' ? 'District' : 'County', state.level === 'lea' ? 'County' : 'Districts', 'ADM ' + sy(YEARS[state.yi]), m.label + ' (' + m.unit + ')'].forEach((h, i) => th.append(Object.assign(el('th', i >= 3 ? 'num' : ''), { textContent: h })));
+    t.append(th);
+    rows.forEach((r, i) => {
+      const tr = el('tr', isSelected(r.id) ? 'hl' : '');
+      tr.append(el('td', '', String(i + 1)), el('td', '', r.name), el('td', '', state.level === 'lea' ? r.county : DATA.counties[r.id].leaCodes.map(k => DATA.leas[k].name.replace(' Public Schools', '').replace(' Schools', '')).join(', ')), el('td', 'num', fmtInt(r.adm)), el('td', 'num', r.v === null ? 'n/a' : m.fmt(r.v)));
+      t.append(tr);
+    });
+    host.append(t);
+  }
+  function renderEventsList() {
+    const host = $('#eventsList'); host.replaceChildren();
+    for (const e of EVENTS) {
+      const li = el('li'); const b = el('span', 'ev-badge' + (e.beyond ? ' beyond' : ''), String(e.n));
+      const d = el('div'); const s = el('b', '', e.label + ' (' + e.when + '). '); d.append(s, document.createTextNode(e.detail)); li.append(b, d); host.append(li);
+    }
+  }
+  function renderEventTicks() {
+    const host = $('#evTicks'); host.replaceChildren();
+    const range = $('#yearRange');
+    for (const e of EVENTS) {
+      const t = (e.x - YEARS[0]) / (YEARS[NY - 1] - YEARS[0]);
+      if (t < 0 || t > 1.03) continue;
+      const tick = el('div', 'ev-tick'); tick.style.left = (Math.min(t, 1) * 100) + '%';
+      tick.append(el('i'), el('span', 'ev-badge' + (e.beyond ? ' beyond' : ''), String(e.n)));
+      tick.title = e.n + '. ' + e.label + ' (' + e.when + ')';
+      tick.addEventListener('pointerenter', ev => showTip(eventTip(e), ev)); tick.addEventListener('pointermove', moveTip); tick.addEventListener('pointerleave', hideTip);
+      host.append(tick);
+    }
+  }
+  function renderYearLabel() { $('#yearBig').textContent = sy(YEARS[state.yi]); $('#yearRange').value = state.yi; }
+
+  // Cheap per-year updates (slider / play) vs. full re-render (control changes)
+  function renderYear() {
+    renderYearLabel();
+    updateMapFills();
+    $('#mapTitle').textContent = 'Statewide · ' + (state.level === 'lea' ? '115 districts' : '100 counties') + ' · ' + sy(YEARS[state.yi]);
+    renderStrip(); renderCards(); renderTable();
+    d3.select('#lineChart .cursor-line').attr('x1', xLine(YEARS[state.yi])).attr('x2', xLine(YEARS[state.yi]));
+    d3.select('#stack .cursor-line').attr('x1', xStack(YEARS[state.yi])).attr('x2', xStack(YEARS[state.yi]));
+    renderHeat(); renderGrowShrink();
+  }
+  const xLine = d3.scaleLinear().domain([YEARS[0], YEARS[NY - 1]]).range([52, 760 - 150]);
+  const xStack = d3.scaleLinear().domain([YEARS[0], YEARS[NY - 1]]).range([56, 760 - 150]);
+  function renderAll() {
+    recompute(); buildColor();
+    renderYearLabel(); renderMaps(); renderLegend(); renderStrip(); renderLine(); renderCards(); renderHeat(); renderStack(); renderGrowShrink(); renderTable();
+  }
+  function setYear(i) { state.yi = Math.max(0, Math.min(NY - 1, i)); renderYear(); }
+
+  // ---- controls wiring ----
+  function seg(id, onChange) {
+    const host = $(id);
+    host.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      host.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      onChange(b.dataset.v);
+    }));
+  }
+  seg('#levelSeg', v => { state.level = v; syncMetricOptions(); renderAll(); });
+  seg('#scopeSeg', v => { state.scope = v; renderAll(); });
+  seg('#lineModeSeg', v => { state.lineMode = v; renderLine(); });
+  $('#metricSel').addEventListener('change', e => { state.metric = e.target.value; syncMetricOptions(); renderAll(); });
+  const baseSel = $('#baseSel');
+  YEARS.slice(0, NY - 1).forEach(y => { const o = el('option', '', sy(y)); o.value = y; baseSel.append(o); });
+  baseSel.value = state.base;
+  baseSel.addEventListener('change', e => { state.base = +e.target.value; if (state.yi < YEARS.indexOf(state.base)) state.yi = NY - 1; renderAll(); });
+  $('#sortSel').addEventListener('change', e => { state.sort = e.target.value; renderHeat(); });
+  $('#yearRange').addEventListener('input', e => { stopPlay(); setYear(+e.target.value); });
+  $('#tableDetails').addEventListener('toggle', renderTable);
+  function syncMetricOptions() {
+    const isCounty = state.level === 'county';
+    $('#countScopeCtl').classList.toggle('hidden', !isCounty);
+    document.querySelectorAll('#metricSel option.county-only').forEach(o => { o.disabled = !isCounty; o.hidden = !isCounty; });
+    if (!isCounty && (state.metric === 'cshare' || state.metric === 'cshareDelta')) { state.metric = 'cum'; $('#metricSel').value = 'cum'; }
+    const needsBase = state.metric === 'cum' || state.metric === 'cshareDelta';
+    $('#baseCtl').style.opacity = needsBase ? 1 : 0.45;
+    $('#baseSel').disabled = !needsBase;
+  }
+  // play / pause
+  const playBtn = $('#playBtn');
+  function startPlay() {
+    state.playing = true; playBtn.innerHTML = '&#10074;&#10074;'; playBtn.setAttribute('aria-label', 'Pause timeline');
+    const startAt = state.metric === 'cum' || state.metric === 'cshareDelta' ? YEARS.indexOf(state.base) : (state.metric === 'avg3' ? 3 : 1);
+    if (state.yi >= NY - 1) setYear(startAt);
+    state.timer = setInterval(() => { if (state.yi >= NY - 1) { stopPlay(); return; } setYear(state.yi + 1); }, 900);
+  }
+  function stopPlay() { if (!state.playing) return; state.playing = false; clearInterval(state.timer); playBtn.innerHTML = '&#9654;'; playBtn.setAttribute('aria-label', 'Play timeline'); }
+  playBtn.addEventListener('click', () => state.playing ? stopPlay() : startPlay());
+  document.addEventListener('keydown', ev => {
+    if (ev.target.matches('input, select, textarea')) return;
+    if (document.getElementById('tab1').hidden) return;
+    if (ev.key === ' ') { ev.preventDefault(); state.playing ? stopPlay() : startPlay(); }
+    if (ev.key === 'ArrowLeft') { stopPlay(); setYear(state.yi - 1); }
+    if (ev.key === 'ArrowRight') { stopPlay(); setYear(state.yi + 1); }
+  });
+  // theme
+  const themeBtn = $('#themeBtn');
+  function currentDark() { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; }
+  themeBtn.addEventListener('click', () => { document.documentElement.dataset.theme = currentDark() ? 'light' : 'dark'; renderAll(); renderKpis(); document.dispatchEvent(new Event('themechange')); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!document.documentElement.dataset.theme) renderAll(); });
+  window.addEventListener('scroll', hideTip, { passive: true });
+
+  // ---- URL hash: #level=county&metric=cshare&base=2015&year=2025&sel=37135,37063 ----
+  function readHash() {
+    const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+    if (h.get('level') === 'county' || h.get('level') === 'lea') state.level = h.get('level');
+    if (h.get('scope') === 'lea' || h.get('scope') === 'total') state.scope = h.get('scope');
+    if (METRIC_META[h.get('metric')]) state.metric = h.get('metric');
+    if (YEARS.includes(+h.get('base')) && +h.get('base') < YEARS[NY - 1]) state.base = +h.get('base');
+    if (YEARS.includes(+h.get('year'))) state.yi = YEARS.indexOf(+h.get('year'));
+    if (['latest', 'cum', 'size', 'name', 'county'].includes(h.get('sort'))) state.sort = h.get('sort');
+    if (h.get('theme') === 'dark' || h.get('theme') === 'light') document.documentElement.dataset.theme = h.get('theme');
+    if (h.get('sel')) {
+      const pool = state.level === 'lea' ? DATA.leas : DATA.counties;
+      const sel = h.get('sel').split(',').filter(id => pool[id]).slice(0, 8);
+      if (sel.length) { state.selected[state.level] = sel; state.slots[state.level] = new Map(sel.map((id, i) => [id, i + 1])); }
+    }
+    document.querySelectorAll('#levelSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === state.level)));
+    document.querySelectorAll('#scopeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === state.scope)));
+    $('#metricSel').value = state.metric; $('#baseSel').value = state.base; $('#sortSel').value = state.sort;
+  }
+  function writeHash() {
+    const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+    h.set('level', state.level); if (state.level === 'county') h.set('scope', state.scope);
+    h.set('metric', state.metric); h.set('base', state.base); h.set('year', YEARS[state.yi]); h.set('sort', state.sort);
+    h.set('sel', selected().join(','));
+    if (document.documentElement.dataset.theme) h.set('theme', document.documentElement.dataset.theme);
+    history.replaceState(null, '', '#' + h.toString());
+  }
+  const _renderAll = renderAll, _renderYear = renderYear;
+  renderAll = function () { _renderAll(); writeHash(); };
+  renderYear = function () { _renderYear(); writeHash(); };
+
+  // ---- go ----
+  readHash(); syncMetricOptions(); renderKpis(); renderEventsList(); renderEventTicks(); renderAll();
+})();
+</script>
+<script>
+<!--__TABS_JS__-->
+</script>
+</body>
+</html>

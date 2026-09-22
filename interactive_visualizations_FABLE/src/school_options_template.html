@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CHCCS School Options Map</title>
+<meta name="description" content="Map and inventory of the charter and private schools a K-5 student in Chapel Hill-Carrboro City Schools could attend instead, within 5 and 25 miles of the district center.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,.10); --neutral: #f0efec;
+    --pos: #2a78d6; --pos-deep: #0d366b; --neg: #e34948; --neg-deep: #7a1717;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s7: #4a3aa7;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 6px 20px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --page: #0d0d0d; --surface: #1a1a19; --ink: #fff; --ink-2: #c3c2b7; --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10); --neutral: #383835; --pos: #3987e5; --pos-deep: #9ec5f4; --neg: #e66767; --neg-deep: #ffb3b3; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s7: #9085e9; --shadow: none; } }
+  :root[data-theme="dark"] { color-scheme: dark; --page: #0d0d0d; --surface: #1a1a19; --ink: #fff; --ink-2: #c3c2b7; --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10); --neutral: #383835; --pos: #3987e5; --pos-deep: #9ec5f4; --neg: #e66767; --neg-deep: #ffb3b3; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s7: #9085e9; --shadow: none; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--page); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 17px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px 80px; }
+  header.top { padding: 22px 0 8px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  header.top h1 { font-size: 22px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+  header.top p { margin: 2px 0 0; color: var(--ink-2); font-size: 15px; }
+  .nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--page) 90%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 10px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .nav a { text-decoration: none; color: var(--ink-2); border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 9px 16px; font-size: 15px; display: inline-flex; gap: 10px; align-items: center; }
+  .nav a b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--neutral); color: var(--ink); font-size: 13px; }
+  .nav a.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .nav a.active b { background: var(--surface); color: var(--ink); }
+  .nav .spacer { flex: 1; }
+  .nav .hint { color: var(--muted); font-size: 13px; }
+  .theme-btn { border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); border-radius: 8px; padding: 7px 11px; font: inherit; font-size: 13px; cursor: pointer; }
+
+  section.chapter { padding: 44px 0 24px; border-bottom: 1px solid var(--border); scroll-margin-top: 70px; }
+  .kicker { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: var(--muted); font-weight: 600; }
+  section.chapter h2 { font-size: 34px; line-height: 1.15; margin: 6px 0 10px; font-weight: 700; letter-spacing: -0.015em; max-width: 980px; }
+  section.chapter p.lede { font-size: 19px; color: var(--ink-2); margin: 0 0 22px; max-width: 900px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0 0 18px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .tile .v { font-size: 38px; font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  .tile .v.neg { color: var(--neg); } .tile .v.pos { color: var(--pos); }
+  .tile .l { color: var(--ink-2); font-size: 14px; margin-top: 6px; line-height: 1.35; }
+  .grid { display: grid; gap: 14px; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .grid.even { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 960px) { .grid, .grid.even { grid-template-columns: 1fr; } section.chapter h2 { font-size: 27px; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px 14px; box-shadow: var(--shadow); min-width: 0; }
+  .card h3 { margin: 0 0 2px; font-size: 17px; font-weight: 650; }
+  .card p.sub { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+  .card svg { display: block; width: 100%; height: auto; }
+  .points { margin: 16px 0 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 20px; }
+  .points h3 { margin: 0 0 6px; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .points ul { margin: 0; padding-left: 20px; }
+  .points li { margin: 6px 0; font-size: 16px; }
+  .points li b { font-weight: 650; }
+  .axis text { fill: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .axis line, .axis path { stroke: var(--axis); }
+  .gridline { stroke: var(--grid); }
+  .lbl { font-size: 13px; font-weight: 650; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+  .lbl.muted { fill: var(--ink-2); font-weight: 500; }
+  .ann { font-size: 13px; fill: var(--ink-2); }
+  .tt { position: fixed; z-index: 50; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; box-shadow: 0 4px 20px rgba(0,0,0,.12); display: none; max-width: 280px; }
+  .tt .t { font-weight: 650; } .tt .row { display: flex; justify-content: space-between; gap: 14px; } .tt .row span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; } .tt .k { color: var(--ink-2); }
+  .mini-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .mini { border: 1px solid var(--border); border-radius: 10px; padding: 10px 10px 6px; position: relative; }
+  .mini.closure { border-color: var(--s2); box-shadow: inset 0 0 0 1px var(--s2); }
+  .mini .n { font-size: 14px; font-weight: 650; line-height: 1.2; }
+  .mini .tag { display: inline-block; margin: 2px 0 2px; padding: 1px 6px; border-radius: 999px; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--s2); border: 1px solid var(--s2); font-weight: 700; }
+  .mini .d { font-size: 12px; color: var(--ink-2); margin-top: 2px; } .mini .d b.neg { color: var(--neg); } .mini .d b.pos { color: var(--pos); }
+  .mini svg { height: 54px; margin-top: 4px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+  .legend i { display: inline-block; width: 16px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+  .legend i.dash { height: 0; border-top: 3px dashed; background: none; }
+  .legend .bar { flex: 0 0 200px; height: 10px; border-radius: 5px; border: 1px solid var(--border); }
+  .footnote { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: var(--neutral); padding: 1px 4px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--neutral)"></rect><line x1="0" y1="0" x2="0" y2="6" stroke="var(--axis)" stroke-width="1"></line></pattern></defs></svg>
+<div class="wrap">
+  <header class="top">
+    <div><h1>Where else could a Chapel Hill-Carrboro K-5 student go?</h1><p>Every charter and private school within 25 miles of the district center, mapped and inventoried. A companion to the enrollment dashboard and podcast page in this folder.</p></div>
+    <button class="theme-btn" id="themeBtn" type="button">Toggle dark mode</button>
+  </header>
+  <!-- ============================== CHAPTER 4 ============================== -->
+  <section class="chapter" id="ch4" style="padding-top:20px;border-bottom:0">
+    <div class="kicker">Chapel Hill-Carrboro City Schools &middot; Where else could a K-5 student go?</div>
+    <h2 id="h4"></h2>
+    <p class="lede" id="lede4"></p>
+    <div class="tiles" id="tiles4"></div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline"><div><h3>Every alternative school within 25 miles of the center of the district</h3><p class="sub">Straight-line distance from the CHCCS district's geographic center. Dot size is enrollment (all grades). Filled dots serve at least one grade from K to 5; hollow dots do not. Small blue squares are CHCCS's own elementary schools. Hover any dot for detail.</p></div>
+        <label style="font-size:14px;color:var(--ink-2);white-space:nowrap"><input type="checkbox" id="k5only" checked> K-5 schools only</label></div>
+      <svg id="c4map" viewBox="0 0 1200 760" role="img"></svg>
+      <div class="legend" id="leg4"></div>
+    </div>
+    <div class="grid" style="margin-bottom:14px">
+      <div class="card"><h3>Inside 5 miles: the full inventory</h3><p class="sub">Every non-CHCCS school within 5 miles of the district center, nearest first. * = listed in the 2026 DNPE directory but not in the 2021-22 federal survey, so grades and enrollment are not reported.</p><div id="c4near"></div></div>
+      <div class="card"><h3>By type and distance</h3><p class="sub">Schools that serve at least one K-5 grade. Enrollment is all grades at the school.</p><div id="c4summary"></div><h3 style="margin-top:14px">Other routes out of CHCCS</h3><div id="c4other" style="font-size:15px;color:var(--ink-2)"></div></div>
+    </div>
+    <div class="card"><details><summary style="cursor:pointer;font-size:15px;color:var(--ink-2)" id="c4farSummary">Full inventory, 5 to 25 miles</summary><div id="c4far"></div></details></div>
+    <div class="points" id="pts4"><h3>Talking points</h3><ul></ul></div>
+    <p class="footnote" id="foot4"></p>
+  </section>
+</div>
+<div class="tt" id="tt"></div>
+
+<script><!--__D3__--></script>
+<script><!--__TOPOJSON__--></script>
+<script>if (location.hash === '#dark' || location.hash === '#light') document.documentElement.dataset.theme = location.hash.slice(1);</script>
+<script>const DATA = /*__DATA__*/null; const DATA2 = /*__DATA2__*/null; const OPTIONS = /*__OPTIONS__*/null;</script>
+<script>
+(function () {
+  'use strict';
+  const Y = DATA.years, BASE = 2017;
+  const fmt = d3.format(','), sy = y => (y - 1) + '-' + String(y).slice(2);
+  const signed = (v, d = 1) => (v > 0 ? '+' : v < 0 ? '\u2212' : '') + Math.abs(v).toFixed(d);
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; };
+  const tt = document.getElementById('tt');
+  const showTip = (nodes, ev) => { tt.replaceChildren(...nodes); tt.style.display = 'block'; moveTip(ev); };
+  const moveTip = ev => { const w = tt.offsetWidth, h = tt.offsetHeight; let x = ev.clientX + 14, y = ev.clientY + 14; if (x + w > innerWidth - 8) x = ev.clientX - w - 14; if (y + h > innerHeight - 8) y = ev.clientY - h - 14; tt.style.left = x + 'px'; tt.style.top = y + 'px'; };
+  const hideTip = () => { tt.style.display = 'none'; };
+  const row = (k, v) => { const r = el('div', 'row'); r.append(el('span', 'k', k), el('span', '', v)); return r; };
+  // ============================================================= CHAPTER 4
+  (function ch4() {
+    const O = OPTIONS, all = O.schools, oc = DATA2.nonpublic['37135'], npy = DATA2.npYears.indexOf(2025);
+    const k5 = all.filter(s => s.servesK5 === true), unknown = all.filter(s => s.servesK5 === null);
+    const inside = r => k5.filter(s => s.miles <= r);
+    const n5 = inside(5), n25 = inside(25);
+    const cnt = (arr, t) => arr.filter(s => s.type === t).length, stu = (arr, t) => d3.sum(arr.filter(s => s.type === t && s.students), s => s.students);
+    const grades = s => s.grades === 'not reported' ? 'grades not reported' : 'grades ' + s.grades;
+    document.getElementById('h4').textContent = 'Inside 5 miles there ' + (cnt(n5, 'charter') === 0 ? 'is no charter school and ' : 'are ' + cnt(n5, 'charter') + ' charter schools and ') + cnt(n5, 'private') + ' private schools with elementary grades. Within 25 miles there are ' + n25.length + '.';
+    document.getElementById('lede4').textContent = 'A K-5 student who leaves CHCCS has four kinds of places to go: a public charter school (tuition-free, admission by lottery, no attendance boundary), a private school (tuition, with Opportunity Scholarships now open to every family), a home school, or a statewide virtual charter. The map counts the first two by distance from the district\u2019s center. ' + cnt(n25, 'charter') + ' charters and ' + cnt(n25, 'private') + ' private schools serving K-5 grades lie within 25 miles, most of them in Durham, Raleigh and Cary.';
+    const tiles = [
+      { v: cnt(n5, 'charter'), l: 'charter schools with K-5 grades inside 5 miles' },
+      { v: cnt(n5, 'private'), l: 'private schools with K-5 grades inside 5 miles (' + fmt(stu(n5, 'private')) + ' students, all grades, 2021-22 survey)' },
+      { v: cnt(n25, 'charter'), l: 'charter schools with K-5 grades inside 25 miles (' + fmt(stu(n25, 'charter')) + ' students, 2024-25 ADM)' },
+      { v: cnt(n25, 'private'), l: 'private schools with K-5 grades inside 25 miles (' + fmt(stu(n25, 'private')) + ' students in the 2021-22 survey)' },
+      { v: fmt(oc.homeSchools[npy]), l: 'registered home schools in Orange County, 2024-25 (about ' + fmt(oc.home[npy]) + ' students, all grades)' },
+    ];
+    const th = document.getElementById('tiles4'); for (const t of tiles) { const k = el('div', 'tile'); k.append(el('div', 'v', String(t.v)), el('div', 'l', t.l)); th.append(k); }
+
+    // ---- map
+    const COLOR = { charter: '--s2', private: '--s7' };
+    function drawMap() {
+      const svg = d3.select('#c4map'), W = 1200, H = 760; svg.selectAll('*').remove();
+      const only = document.getElementById('k5only').checked, pts = only ? k5 : all;
+      const R = 3958.7613, degMi = m => (m / R) * 180 / Math.PI;
+      const ring25 = d3.geoCircle().center([O.center.lon, O.center.lat]).radius(degMi(25))(), ring5 = d3.geoCircle().center([O.center.lon, O.center.lat]).radius(degMi(5))();
+      const proj = d3.geoMercator().fitExtent([[20, 20], [W - 20, H - 20]], ring25), path = d3.geoPath(proj);
+      const topo = DATA.topology, feats = topojson.feature(topo, topo.objects.data).features;
+      for (const f of feats) { const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates; for (const poly of polys) poly.forEach((ring, i) => { if ((d3.geoArea({ type: 'Polygon', coordinates: [ring] }) > 2 * Math.PI) !== (i > 0)) ring.reverse(); }); }
+      const counties = feats.filter(f => f.properties.layer === 'county'), chccs = feats.find(f => f.properties.id === '681LEA' && f.properties.layer === 'lea');
+      svg.append('clipPath').attr('id', 'clip4').append('rect').attr('width', W).attr('height', H).attr('rx', 10);
+      const g = svg.append('g').attr('clip-path', 'url(#clip4)');
+      g.append('rect').attr('width', W).attr('height', H).attr('fill', cssVar('--page'));
+      g.append('g').selectAll('path').data(counties).join('path').attr('d', path).attr('fill', cssVar('--surface')).attr('stroke', cssVar('--axis')).attr('stroke-width', 1);
+      g.append('path').attr('d', path(chccs)).attr('fill', cssVar('--s1')).attr('opacity', .18).attr('stroke', cssVar('--s1')).attr('stroke-width', 1.5);
+      g.append('path').attr('d', path(ring25)).attr('fill', 'none').attr('stroke', cssVar('--ink')).attr('stroke-width', 1.2).attr('stroke-dasharray', '6 5');
+      g.append('path').attr('d', path(ring5)).attr('fill', 'none').attr('stroke', cssVar('--ink')).attr('stroke-width', 1.5);
+      const c = proj([O.center.lon, O.center.lat]);
+      const r5 = proj([O.center.lon + degMi(5) / Math.cos(O.center.lat * Math.PI / 180), O.center.lat])[0] - c[0], r25 = proj([O.center.lon + degMi(25) / Math.cos(O.center.lat * Math.PI / 180), O.center.lat])[0] - c[0];
+      g.append('text').attr('class', 'lbl').attr('x', c[0] - r5 * 0.7).attr('y', c[1] + r5 * 0.85).attr('text-anchor', 'end').text('5 miles');
+      g.append('text').attr('class', 'lbl').attr('x', c[0] + r25 * 0.72).attr('y', c[1] - r25 * 0.72).text('25 miles');
+      // county labels
+      const CITIES = [['Chapel Hill', -79.0558, 35.9132], ['Durham', -78.8986, 35.994], ['Raleigh', -78.6382, 35.7796], ['Cary', -78.7811, 35.7915], ['Hillsborough', -79.0997, 36.0754], ['Pittsboro', -79.1772, 35.7201], ['Burlington', -79.4378, 36.0957], ['Apex', -78.8503, 35.7327], ['Carrboro', -79.0753, 35.91], ['Mebane', -79.267, 36.0957], ['Roxboro', -78.9853, 36.3938], ['Sanford', -79.1803, 35.4799]];
+      g.append('g').selectAll('text').data(CITIES).join('text').attr('class', 'lbl muted').attr('x', d => proj([d[1], d[2]])[0] + (d[0] === 'Carrboro' ? -8 : d[0] === 'Chapel Hill' ? 8 : 0)).attr('y', d => proj([d[1], d[2]])[1] + (d[0] === 'Carrboro' ? 16 : -8)).attr('text-anchor', d => d[0] === 'Carrboro' ? 'end' : d[0] === 'Chapel Hill' ? 'start' : 'middle').attr('font-size', 12).text(d => d[0]);
+      g.append('g').selectAll('circle').data(CITIES).join('circle').attr('cx', d => proj([d[1], d[2]])[0]).attr('cy', d => proj([d[1], d[2]])[1]).attr('r', 2).attr('fill', cssVar('--muted'));
+      // CHCCS elementary schools
+      g.append('g').selectAll('rect').data(O.chccsElementary).join('rect').attr('x', d => proj([d.lon, d.lat])[0] - 4).attr('y', d => proj([d.lon, d.lat])[1] - 4).attr('width', 8).attr('height', 8).attr('fill', cssVar('--s1')).attr('stroke', cssVar('--surface'))
+        .on('pointerenter', (ev, d) => showTip([el('div', 't', d.name), el('div', 'k', 'CHCCS elementary school')], ev)).on('pointermove', moveTip).on('pointerleave', hideTip);
+      const rs = d3.scaleSqrt().domain([0, d3.max(all, s => s.students || 0)]).range([3.5, 16]);
+      const sorted = pts.slice().sort((a, b) => (b.students || 0) - (a.students || 0));
+      g.append('g').selectAll('circle').data(sorted).join('circle').attr('cx', d => proj([d.lon, d.lat])[0]).attr('cy', d => proj([d.lon, d.lat])[1]).attr('r', d => rs(d.students || 40))
+        .attr('fill', d => d.servesK5 === true ? cssVar(COLOR[d.type]) : 'none').attr('stroke', d => cssVar(COLOR[d.type])).attr('stroke-width', 1.5).attr('stroke-dasharray', d => d.servesK5 === null ? '2 2' : null).attr('opacity', d => d.servesK5 === true ? .85 : .7).style('cursor', 'pointer')
+        .on('pointerenter', (ev, d) => showTip([el('div', 't', d.name), el('div', 'k', (d.type === 'charter' ? 'Public charter' : d.typology) + ' \u00b7 ' + d.city), row('Distance', d.miles + ' mi'), row('Grades', d.grades), row('Students', d.students ? fmt(d.students) + ' (' + d.studentsYear + ')' : 'not reported'), ...(d.vouchers2024 ? [row('Voucher students 2023-24', fmt(d.vouchers2024))] : []), ...(d.opened ? [row('First year in DPI data', sy(d.opened))] : [])], ev)).on('pointermove', moveTip).on('pointerleave', hideTip);
+      const lg = document.getElementById('leg4'); lg.replaceChildren();
+      [['Public charter school', COLOR.charter], ['Private school', COLOR.private], ['CHCCS elementary school', '--s1']].forEach(d => { const sp = el('span'); const i = el('i'); i.style.cssText = 'width:12px;height:12px;border-radius:' + (d[0].startsWith('CHCCS') ? '2px' : '50%') + ';background:' + cssVar(d[1]); sp.append(i, document.createTextNode(d[0])); lg.append(sp); });
+      const hs = el('span'); const hi = el('i'); hi.style.cssText = 'width:12px;height:12px;border-radius:50%;background:none;border:2px solid ' + cssVar('--s7'); hs.append(hi, document.createTextNode('hollow: no K-5 grades')); lg.append(hs);
+      const hu = el('span'); const hj = el('i'); hj.style.cssText = 'width:12px;height:12px;border-radius:50%;background:none;border:2px dotted ' + cssVar('--s7'); hu.append(hj, document.createTextNode('dotted: grades not reported (directory only)')); lg.append(hu);
+    }
+    drawMap();
+    document.getElementById('k5only').addEventListener('change', drawMap);
+
+    // ---- tables
+    function table(host, rows, withVouchers) {
+      host.replaceChildren();
+      const t = el('table', 'data'); t.style.cssText = 'width:100%;border-collapse:collapse;font-size:13px';
+      const th = el('tr'); ['Miles', 'School', 'Type', 'Grades', 'Students', 'City'].concat(withVouchers ? ['Vouchers 2023-24'] : []).forEach((h, i) => { const c = el('th', '', h); c.style.cssText = 'text-align:' + (i === 0 || i === 4 || i === 6 ? 'right' : 'left') + ';padding:4px 8px;border-bottom:1px solid var(--grid);color:var(--ink-2);font-weight:600'; th.append(c); }); t.append(th);
+      for (const s of rows) {
+        const tr = el('tr');
+        const cells = [String(s.miles) + (s.approx ? ' ~' : ''), s.name, s.type === 'charter' ? 'Charter' : s.typology.replace(' (in DNPE directory, not in the 2021-22 NCES survey)', '*'), s.grades, s.students ? fmt(s.students) : '\u2014', s.city].concat(withVouchers ? [s.vouchers2024 ? fmt(s.vouchers2024) : '\u2014'] : []);
+        cells.forEach((v, i) => { const td = el('td', '', v); td.style.cssText = 'text-align:' + (i === 0 || i === 4 || i === 6 ? 'right' : 'left') + ';padding:4px 8px;border-bottom:1px solid var(--grid);' + (s.servesK5 === false ? 'color:var(--muted)' : ''); tr.append(td); });
+        t.append(tr);
+      }
+      host.append(t);
+    }
+    table(document.getElementById('c4near'), all.filter(s => s.miles <= 5), true);
+    const far = all.filter(s => s.miles > 5 && s.miles <= 25);
+    document.getElementById('c4farSummary').textContent = 'Full inventory, 5 to 25 miles (' + far.length + ' schools; ' + far.filter(s => s.servesK5 !== false).length + ' with K-5 grades). Click to expand.';
+    table(document.getElementById('c4far'), far, true);
+    // summary by type and ring
+    { const host = document.getElementById('c4summary'); const t = el('table', 'data'); t.style.cssText = 'width:100%;border-collapse:collapse;font-size:14px';
+      const th = el('tr'); ['', '0-5 mi', '5-10 mi', '10-25 mi', 'Students within 25 mi'].forEach((h, i) => { const c = el('th', '', h); c.style.cssText = 'text-align:' + (i ? 'right' : 'left') + ';padding:4px 8px;border-bottom:1px solid var(--grid);color:var(--ink-2);font-weight:600'; th.append(c); }); t.append(th);
+      const bands = [[0, 5], [5, 10], [10, 25]];
+      const rowsDef = [['Charter (K-5 grades)', k5, s => s.type === 'charter'], ['Private, religious (K-5 grades)', k5, s => s.type === 'private' && /Catholic|Christian|religious/.test(s.typology)], ['Private, nonsectarian (K-5 grades)', k5, s => s.type === 'private' && /Nonsectarian/.test(s.typology)], ['Private, grades not reported (directory only)', unknown, s => true]];
+      for (const [label, pool, f] of rowsDef) { const tr = el('tr'); const sub = pool.filter(f); const cells = [label].concat(bands.map(b => String(sub.filter(s => s.miles > b[0] && s.miles <= b[1]).length))).concat([fmt(d3.sum(sub.filter(s => s.students), s => s.students))]); cells.forEach((v, i) => { const td = el('td', '', v); td.style.cssText = 'text-align:' + (i ? 'right' : 'left') + ';padding:4px 8px;border-bottom:1px solid var(--grid)'; tr.append(td); }); t.append(tr); }
+      const tr = el('tr'); ['All K-5 options'].concat(bands.map(b => String(k5.filter(s => s.miles > b[0] && s.miles <= b[1]).length))).concat([fmt(d3.sum(k5.filter(s => s.students), s => s.students))]).forEach((v, i) => { const td = el('td', '', v); td.style.cssText = 'text-align:' + (i ? 'right' : 'left') + ';padding:4px 8px;font-weight:700'; tr.append(td); }); t.append(tr);
+      host.append(t); }
+    { const host = document.getElementById('c4other');
+      const vs = O.virtualCharters.map(v => v.name + ' (' + fmt(v.students) + ' students statewide, ' + v.grades + ')').join(' and ');
+      [el('p', '', 'Home school: ' + fmt(oc.homeSchools[npy]) + ' registered home schools in Orange County in 2024-25, an estimated ' + fmt(oc.home[npy]) + ' students of all grades; ' + fmt(oc.homeSchools[DATA2.npYears.indexOf(BASE)]) + ' home schools in ' + sy(BASE) + '.'),
+       el('p', '', 'Statewide virtual charters, open to any NC student: ' + vs + '.'),
+       el('p', '', 'Vouchers: ' + fmt(DATA2.vouchers.byCounty['37135']) + ' Orange County students used an Opportunity Scholarship in 2024-25. In 2023-24 the Chapel Hill private schools on this map enrolled ' + fmt(d3.sum(all.filter(s => s.miles <= 5), s => s.vouchers2024 || 0)) + ' voucher students between them.')].forEach(x => host.append(x)); }
+    const nearest = all.filter(s => s.miles <= 5).map(s => s.name.replace(' Catholic School', '').replace(' School', '')).join(', ');
+    const nearestCharter = all.filter(s => s.type === 'charter').sort((a, b) => a.miles - b.miles)[0];
+    const pts4 = [
+      '<b>Inside the district, the alternative is private or home.</b> No charter school operates within 5 miles of the district center; the nearest is ' + nearestCharter.name + ' at ' + nearestCharter.miles + ' miles. The private schools inside 5 miles are ' + nearest + '.',
+      '<b>The real competition is a short drive away.</b> Within 25 miles there are ' + cnt(n25, 'charter') + ' charters and ' + cnt(n25, 'private') + ' private schools with elementary grades, concentrated in Durham, Raleigh and Cary. Charters have no attendance boundaries, so a Chapel Hill family can enter any of their lotteries.',
+      '<b>Vouchers connect the two.</b> Every private school on this map is eligible for Opportunity Scholarships, which since 2024-25 have no income limit. The Chapel Hill schools closest to the district already had ' + fmt(d3.sum(all.filter(s => s.miles <= 5), s => s.vouchers2024 || 0)) + ' voucher students in 2023-24, before the waitlist was funded.',
+      '<b>Home school is the quiet third option.</b> Orange County had ' + fmt(oc.homeSchools[npy]) + ' registered home schools in 2024-25, up from ' + fmt(oc.homeSchools[DATA2.npYears.indexOf(BASE)]) + ' in ' + sy(BASE) + '.',
+    ];
+    const ul = document.querySelector('#pts4 ul'); for (const p of pts4) { const li = el('li'); li.innerHTML = p; ul.append(li); }
+    document.getElementById('foot4').textContent = 'Sources: NC DPI location and ADM tables (charters, 2024-25); NCES Private School Universe Survey 2021-22 with NCES EDGE coordinates (private schools, enrollment and grade spans); NC DNPE private school directory, Jan. 2026, geocoded with the Census Bureau geocoder for schools not in the 2021-22 survey (marked *; grades and enrollment not reported); NCSEAA 2023-24 annual report (voucher students by school). Distances are straight-line from the district\u2019s geographic center (' + O.center.lat.toFixed(3) + ', ' + O.center.lon.toFixed(3) + '). Private enrollment counts include all grades the school offers. Preschools and schools that closed before 2021-22 are not included.';
+  })();
+
+  document.getElementById('themeBtn').addEventListener('click', () => { const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; location.hash = dark ? '#light' : '#dark'; location.reload(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+
+# Large, freely re-downloadable raw files: run src/fetch_raw_data.py to restore them
+data/raw/cb_2023_37_unsd_500k.zip
+data/raw/cb_2023_us_county_500k.zip
+data/raw/saipe/
+data/raw/census_popest/
+data/raw/nces/
