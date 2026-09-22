@@ -1,0 +1,67 @@
+rcd_filename,start_year,end_year,status,description
+rcd_161,2009.0,2012.0,retired,College Completes
+rcd_acc_aapart,2018.0,,active,Accountabilty - Alternate Assessment Participation
+rcd_acc_act,2013.0,,active,Accountability - Indicator Data - ACT
+rcd_acc_awa,2018.0,,active,Accountability - Indicator Data - ACT/Workkeys assessments
+rcd_acc_cgr,2016.0,,active,Accountability - Indicator Data - Cohort Graduation Rate
+rcd_acc_eds,2017.0,,active,Accountability - Percent of Economically Disadvantaged Students
+rcd_acc_eg,2018.0,,active,Accountability - EVAAS growth
+rcd_acc_elp,2018.0,,active,Accountability - Indicator Data - English learner progress
+rcd_acc_essa_desig,2018.0,,active,Accountability - ESSA designations
+rcd_acc_gp,2013.0,,active,Accountability - Graduation Project
+rcd_acc_irm,2017.0,2021.0,retired,Accountability - Incoming Reading.and Math Readiness
+rcd_acc_lowperf,2018.0,,active,Accountability - Low Performing Schools
+rcd_acc_ltg,2018.0,,active,Accountability - Long term goals (summary)
+rcd_acc_ltg_detail,2018.0,,active,Accountability - long term goals (detail)
+rcd_acc_mcr,2013.0,,active,Accountability - Indicator Data - math course rigor
+rcd_acc_part,2013.0,,active,Accountability - participation targets (summary)
+rcd_acc_part_detail,2018.0,,active,Accountability - participation targets (detail)
+rcd_acc_pc,2014.0,,active,Accountability - Indicator Data - performance composite (EOG/EOC)
+rcd_acc_rta,2014.0,,active,Accountability - Read to Achieve 3rd grade
+rcd_acc_spg1,2014.0,2017.0,active,Accountability - School Performance Grades - First Version
+rcd_acc_spg2,2018.0,,active,Accountability - School Performance Grades - Second Version
+rcd_acc_wk,2013.0,,active,Accountability - Indicator Data - Work Keys
+rcd_adm,2016.0,,active,"Final Average Daily Membership (Due to the transition to a new student information system (SIS), the calculation of the 2024–2025 final ADM may have resulted in higher-than-expected student enrollment counts.)"
+rcd_ap,2014.0,,active,Advanced Placement (AP) test score percentages and participation rates 
+rcd_ap_crs_list,2019.0,2019.0,retired,List of Advanced Placement (AP) courses offered
+rcd_arts,2018.0,2022.0,retired,Arts Education programs offered at school level
+rcd_arts2,2023.0,,active,Arts Education programs offered at school level
+rcd_att,2006.0,2018.0,retired,Attendance percentages by ADM (Average Daily Membership)
+rcd_cie,2018.0,,active,Cambridge International Education (CIE) exam score percentages and participation 
+rcd_charter,2018.0,2019.0,retired,Demographic percentages by subgroup and home lea user for comparison with like grade levels.  Was created in SY 1718 per ESSA federal requirements (demo info) and per state super (comparison).  Home_lea has been moved to rcd_location.
+rcd_chronic_absent,2018.0,,active,"2021-2022 Percentage of students who were enrolled for at least 10 days in a school/district who are chronically absent from school. A student is defined as chronically absent when they are enrolled in a NC public school for at least 10 school days at any time during the school year, and whose total number of absences is = or > 10% of the total number of days that the student has been enrolled at any school during a given school year."
+rcd_code_desc,,,active,Control table for codes in various datasets
+rcd_college,2013.0,,active,"College Enrollment; 2016 grad cohort is missing from our data set because USED changed the range requirements between the 2015 and 2017 grad cohorts, which made 2016 a “gap” year for the change over from one set of requirements to another.  Based on the  change, we didn’t collect the information needed to create the file for that cohort, and therefore there is not a file to share or publish."
+rcd_courses1,2014.0,2017.0,retired,"PowerSchool, AP, IB, CTE and University enrollment percentages.  Includes  University College course total students enrolled"
+rcd_courses2,2018.0,,active,"Advanced Placement (AP), International Baccalaureate (IB), Cambridge International Education (CIE) and Career and College Promice (CCP)/University-level course nrollment percentages. "
+rcd_cte_concentrators,2017.0,,active,CTE - Concentrators
+rcd_cte_credentials,2018.0,,active,CTE - Credentials
+rcd_cte_endorsement,2017.0,,active,High School Diploma Endorsements
+rcd_cte_enrollment,2018.0,,active,CTE - Enrollment
+rcd_cte_enrollment_cluster,2019.0,2022.0,retired,
+rcd_dlmi,2018.0,,active,Digital Learning & Media Inventory
+rcd_effectiveness,2011.0,2018.0,retired,"Educator Effectiveness (i.e. Teachers and Principals standards, ratings and growth)"
+rcd_effectiveness3,2019.0,,active,"Educator Effectiveness (i.e. Teachers and Principals standards, ratings and growth)"
+rcd_eq,2018.0,,active,Educator Qualifications
+rcd_esea_att,2013.0,2015.0,retired,"ESEA Attendance data, no longer required by feds"
+rcd_experience,2006.0,2018.0,retired,"Replaced by rcd_eq. Staff Experience (i.e. Teachers and Principals years of experience, advance degrees and turnover)"
+rcd_funds,2003.0,2018.0,retired,"Funding and user by district, state and Federal"
+rcd_funds2,2019.0,,active,"Per Pupil Expenditures by district, state and Federal"
+rcd_hqt,2006.0,2016.0,retired,
+rcd_ib,2014.0,,active,International Baccalaureate (IB) exam passing percentages and participation rates  *change in calculation for 2019-20
+rcd_improvement,2018.0,2018.0,retired,
+rcd_improvement2,2019.0,,active,
+rcd_inc1,2016.0,2017.0,active,"PowerSchool, incident data - per 100 students"
+rcd_inc2,2018.0,,active,Incident and Discipline data - per 1000 students
+rcd_licenses,2006.0,2018.0,retired,Licensed Teachers
+rcd_location,2016.0,,active,basic educational entity details including entity name and category code
+rcd_naep,2009.0,,active,National Assessment of Educational Progress (NAEP) data
+rcd_nbpts,2006.0,2018.0,retired,
+rcd_nbpts2,2021.0,,active,National Board Professional Certified Teachers
+rcd_pk_enroll,2018.0,,active,Pre-Kindergarten Enrollment
+rcd_prin_demo,2016.0,,active,Principal Demographics
+rcd_readiness,2018.0,2022.0,retired,
+rcd_sar,2016.0,,active,Average Class Size (The Districts and Schools that transitioned student information systems (SIS) at the start of the 2024-2025 school year do not have kindergarten through grade 8 class size data for the 2024-2025 year. The report used to collect and verify these data was still in development in the new SIS until the start of the 2025-2026 school year. More information about the SIS transition can be found https://www.dpi.nc.gov/educators/nced-connect-formerly-home-base/ncsis-powered-infinite-campus/faq-timeline)
+rcd_sat,2002.0,,active,SAT score percentages and participation rates
+rcd_welcome,2017.0,,active,welcome letter URLs
+rcd_school_recognitions,2020.0,,active,"National Blue Ribbon Schools (BRS; prior to 2024-2025), Green Ribbon Schools (GRS); Global-Ready Schools and Districts; Purple Star Award; NC STEM Schools of Distinction (STEM); State Schools of Character (SSOC)"

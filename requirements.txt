@@ -1,0 +1,14 @@
+# Core analysis -- needed by every script in src/
+pandas==2.3.3
+numpy==2.2.6
+matplotlib==3.10.9
+
+# Only needed by the legacy scripts, not by the main pipeline:
+#   openpyxl -> src/fetch_dpi_adm.py reads .xlsx (not committed, see .gitignore)
+#   pypdf    -> src/extract_pdf_tables.py reads the board PDFs
+openpyxl==3.1.5
+pypdf==6.19.0
+
+# Running notebooks/chccs_enrollment_exploration.ipynb
+jupyter==1.1.1
+ipykernel==7.3.0

@@ -1,0 +1,18 @@
+General Rules For School Report Card Data
+""
+"Data will be delivered in discrete tables, containing SEA, LEA and School level records as per business requirement."
+"All tables will contain at least the following keys:
+ - year
+ - agency_code"
+"Masking Rules:
+Count = <10
+Percent = <5%, >95%
+Masking will be completed by Business Area.  If Business Area is not able to mask data, RCD team will mask.
+To assist in troubleshooting, data set should must indicate when element is masked."
+"Excluded LEAs:
+209;269;298;299;679;996;997;998;999
+"
+Excluded Schools: - pending
+category code included in rcd_location file
+"LEA and School codes should include the leading ""0"" "
+LEA and School codes must be in DPI school code format (not PowerSchool format)
